@@ -1,0 +1,57 @@
+<div id="user-list">
+
+  <div class="container pt-2 pb-3">
+
+    <h2 class="text-center text-or pb-2"><%= __('view_users.title_list_users') %></h2>
+
+      <div>
+          <%- partial ('../../partials/tables/PerPageAndSearch',{pagination:pagination}); %>
+      </div>
+      <table class="table">
+          <thead class="thead-light">
+          <tr>
+              <th scope="col">
+                  <%- partial ('../../partials/tables/sort',{field:'fullName', sort:pagination.sort}); %>
+                  <%= __('view_users.name') %>
+              </th>
+              <th scope="col">
+                  <%- partial ('../../partials/tables/sort',{field:'emailAddress', sort:pagination.sort}); %>
+                  <%= __('view_users.email') %>
+              </th>
+              <th scope="col">
+                  <%= __('view_users.role') %>
+              </th>
+              <th class="w_130px">
+                  <%= __('view_users.created') %>
+              </th>
+          </tr>
+          </thead>
+          <tbody>
+          <% allUsers.forEach((user, index)=>{ %>
+          <tr>
+              <td class="font-weight-bold">
+                  <%= user.fullName %>
+              </td>
+              <td>
+                  <%= user.emailAddress %>
+              </td>
+              <td>
+                  <% if(user.permissions.length > 0){ %>
+                      <%= __(`roles.${user.permissions[0].role}`) %>
+                  <% } %>
+              </td>
+              <td>
+                  <small>
+                      <%= moment(user.createdAt).format('DD/MM/YYYY HH:mm') %>
+                  </small>
+              </td>
+          </tr>
+          <% }); %>
+          </tbody>
+      </table>
+      <div>
+          <%- partial ('../../partials/tables/BuilderLinksPartial',{pagination:pagination}); %>
+      </div>
+  </div>
+</div>
+<%- /* Expose locals as `window.SAILS_LOCALS` :: */ exposeLocalsToBrowser() %>

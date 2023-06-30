@@ -1,0 +1,42 @@
+<% if(me) { %>
+
+    <ul class="navbar-nav mr-auto">
+        <li class="">
+            <a class="nav-item nav-link ml-1 ml-md-0 mr-1 mr-md-0 border-0" href="/language-change?lang=es">
+                <span class="<% if(me.lang == 'es') { %> lang_selected <% }else { %> no_select <% } %>pb-1">ES</span>
+            </a>
+        </li>
+
+        <li class="">
+            <a class="nav-item nav-link ml-1 ml-md-0 mr-1 mr-md-0 border-0" href="/language-change?lang=en">
+                <span class="<% if(me.lang == 'en') { %> lang_selected <% }else { %> no_select <% } %>pb-1">EN</span>
+            </a>
+        </li>
+    </ul>
+<% } else { %>
+    <ul class="navbar-nav mr-auto">
+        <li class="">
+            <a class="nav-item nav-link ml-1 ml-md-0 mr-1 mr-md-0 border-0" href="?lang=es">
+                <span class="<% if(req.getLocale() == 'es') { %> lang_selected <% }else { %> no_select <% } %>pb-1">ES</span>
+            </a>
+        </li>
+
+        <li class="">
+            <a class="nav-item nav-link ml-1 ml-md-0 mr-1 mr-md-0 border-0" href="?lang=en">
+                <span class="<% if(req.getLocale() == 'en') { %> lang_selected <% }else { %> no_select <% } %>pb-1">EN</span>
+            </a>
+        </li>
+    </ul>
+<% } %>
+
+<style>
+  .lang_selected {
+    border-bottom: solid 3px #b906f3 !important;
+    color: #f1f8ff !important;
+  }
+
+  .no_select:hover {
+    border-bottom: #5a6268 2px solid;
+  }
+</style>
+

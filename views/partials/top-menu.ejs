@@ -1,0 +1,53 @@
+<% if(me) { %>
+
+    <div class="navbar-nav mr-auto px-3">
+        <ul class="navbar-nav mr-auto">
+            <% for (let section of sails.config.userPermission.sections){
+                let findSection = me.sectionRole.find(role => role.section === section.name);
+
+            if(findSection && ((findSection.permission !== sails.config.userPermission.canDo[`${findSection.role}`].none && section.rolesPermit.includes(`${findSection.role}`)) || me.isSuperAdmin)){
+            %>
+                <li class="">
+                    <% if(section.url != ''){ %>
+
+                        <a href="<%= section.url %>" id="<%= section.name %>"
+                              class="nav-item nav-link ml-1 ml-md-0 mr-1 mr-md-0 border-0 sections">
+                            <span class="<% if(me.sectName === section.name) { %> section_selected <% }else { %> no_section_selected <% } %>pb-2 text-capitalize">
+                                <%= __(`Menu.${section.name}.name`) %>
+                            </span>
+                        </a>
+
+                    <% }else{ %>
+
+                        <span id="<%= section.name %>"
+                              class="nav-item nav-link ml-1 ml-md-0 mr-1 mr-md-0 border-0 sections">
+                            <span class="<% if(me.sectName === section.name) { %> section_selected <% }else { %> no_section_selected <% } %>pb-2 text-capitalize">
+                                <%= __(`Menu.${section.name}.name`) %>
+                            </span>
+                        </span>
+
+                    <% } %>
+                </li>
+            <% }} %>
+        </ul>
+    </div>
+<% } %>
+
+<style>
+  .section_selected {
+    border-bottom: solid 4px #0694f3 !important;
+    border-radius: 3px;
+    color: #f3fafc !important;
+    font-weight: bold;
+  }
+
+  .no_section_selected:hover {
+    border-bottom: #788f9f 2px solid;
+  }
+
+  .sections {
+    cursor: pointer;
+  }
+</style>
+
+

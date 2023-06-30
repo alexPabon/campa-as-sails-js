@@ -1,0 +1,62 @@
+<div class="d-inline-flex flex-wrap justify-content-between align-content-end align-items-center w-100 py-2">
+    <div>
+        <div class="form-group p-1 rounded bg_light_dark">
+            <select id="selPerPage" class="form-control perPage">
+                <option value="25" class="py-3" <% if(pagination.perPage == 25) {%> selected <%}%>>25</option>
+                <option value="50" class="py-3" <% if(pagination.perPage == 50) {%> selected <%}%>>50</option>
+                <option value="100" class="py-3" <% if(pagination.perPage == 100) {%> selected <%}%>>100</option>
+            </select>
+        </div>
+    </div>
+    <div>
+        <div class="input-group pl-2 py-1 bg_light_dark  rounded">
+            <div class="form-outline">
+                <input id="searchField" type="search" id="form1" class="form-control" value="<%= pagination.search %>" />
+            </div>
+            <span type="button" class="p-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                </svg>
+            </span>
+        </div>
+    </div>
+</div>
+<script>
+
+  let timeSearchField;
+
+  document.addEventListener("DOMContentLoaded", () => {
+    paramsTable['basePath'] = '<%= pagination.path %>';
+    paramsTable['perPage'] = parseInt(<%= pagination.perPage %>);
+    paramsTable['search'] = '<%= pagination.search %>'.trim();
+    paramsTable['sort'] = '<%= pagination.sort %>'.trim();
+
+    let searchField = document.getElementById('searchField');
+    let selectPerpage = document.getElementById('selPerPage');
+
+    searchField.addEventListener('keyup', function (){
+
+      paramsTable['search'] = this.value.trim();
+
+      clearTimeout(timeSearchField);
+
+      timeSearchField = setTimeout(function (){
+        console.log(paramsTable.search);
+        getResultsTable();
+      },700);
+
+    });
+
+    if(paramsTable.search != '') {
+        searchField.focus();
+        searchField.setSelectionRange(searchField.value.length, searchField.value.length);
+    }
+
+    selectPerpage.addEventListener('change', function (){
+      paramsTable['perPage'] = parseInt(this.value);
+      getResultsTable();
+    });
+  });
+
+</script>
+

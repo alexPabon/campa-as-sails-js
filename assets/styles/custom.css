@@ -1,0 +1,31 @@
+.bg_red{
+  background: red;
+}
+
+.bg_light_dark{
+  background: #e9ecef;
+}
+
+.btn_light_dark{
+  background: #e9ecef;
+}
+
+.btn_light_dark:hover{
+  background: #c9cbcb;
+}
+
+.w_130px{
+  width: 130px;
+}
+
+.w_2{
+  width: 2% !important;
+}
+
+.w_4{
+  width: 4% !important;
+}
+
+.pointer{
+  cursor: pointer;
+}
