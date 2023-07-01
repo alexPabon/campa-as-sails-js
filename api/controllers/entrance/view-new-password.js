@@ -33,6 +33,17 @@ module.exports = {
 
   fn: async function ({token}) {
 
+    if (this.req.me) {
+      throw {redirect: '/'};
+    }
+
+    const languages = sails.config.i18n.locales;
+    let lang = this.req.query.lang
+
+    if(lang !== 'undifined' && languages.includes(lang)){
+      this.req.setLocale(lang);
+    }
+
     // If password reset token is missing, display an error page explaining that the link is bad.
     if (!token) {
       sails.log.warn('Attempting to view new password (recovery) page, but no reset password token included in request!  Displaying error page...');

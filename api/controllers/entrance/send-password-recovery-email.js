@@ -18,7 +18,6 @@ module.exports = {
 
   },
 
-
   exits: {
 
     success: {
@@ -52,7 +51,7 @@ module.exports = {
     // Send recovery email
     await sails.helpers.sendTemplateEmail.with({
       to: emailAddress,
-      subject: 'Password reset instructions',
+      subject: sails.__('Password reset instructions'),
       template: 'email-reset-password',
       templateData: {
         fullName: userRecord.fullName,

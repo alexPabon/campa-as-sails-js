@@ -1,3 +1,4 @@
+const smtpConfig = sails.config.smtp;
 module.exports = {
 
 
@@ -128,6 +129,14 @@ module.exports = {
     var url = require('url');
     var util = require('util');
 
+    if(from === undefined){
+      from = process.env.MAIL_FROM_ADDRESS
+    }
+
+    if(fromName === undefined){
+      fromName = process.env.MAIL_FROM_NAME
+    }
+
 
     if (!_.startsWith(path.basename(template), 'email-')) {
       sails.log.warn(
@@ -237,39 +246,31 @@ module.exports = {
         );
       }
 
-      var subjectLinePrefix = sails.config.environment === 'production' ? '' : sails.config.environment === 'staging' ? '[FROM STAGING] ' : '[FROM LOCALHOST] ';
-      var messageData = {
-        htmlMessage: htmlEmailContents,
-        to: to,
-        toName: toName,
-        bcc: bcc,
-        subject: subjectLinePrefix+subject,
-        from: from,
-        fromName: fromName,
-        attachments
-      };
+      var subjectLinePrefix = sails.config.environment === 'production' ? `${process.env.MAIL_FROM_NAME} ` : sails.config.environment === 'staging' ? '[FROM STAGING] ' : `DEV_${process.env.MAIL_FROM_NAME} `;
 
-      var deferred = sails.helpers.sendgrid.sendHtmlEmail.with(messageData);
-      if (ensureAck) {
-        await deferred;
-      } else {
-        // FUTURE: take advantage of .background() here instead (when available)
-        deferred.exec((err)=>{
-          if (err) {
-            sails.log.error(
-              'Background instruction failed:  Could not deliver email:\n'+
-              util.inspect({template, templateData, to, toName, subject, from, fromName, layout, ensureAck, bcc, attachments},{depth:null})+'\n',
-              'Error details:\n'+
-              util.inspect(err)
-            );
-          } else {
-            sails.log.info(
-              'Background instruction complete:  Email sent via email delivery service (or at least queued):\n'+
-              util.inspect({to, toName, subject, from, fromName, bcc},{depth:null})
-            );
-          }
-        });//_∏_
-      }//ﬁ
+      smtpConfig.transporter.sendMail({
+        from: from,
+        to: to,
+        subject: subjectLinePrefix+subject,
+        html: htmlEmailContents,
+      }, function(error, info) {
+        if (error) {
+          sails.log.error(
+            'Background instruction failed:  Could not deliver email:\n'+
+            util.inspect({template, templateData, to, toName, subject, from, fromName, layout, ensureAck, bcc, attachments},{depth:null})+'\n',
+            'Error details:\n'+
+            util.inspect(error)
+          );
+          console.log('Error al enviar el correo electrónico:', error);
+        } else {
+          sails.log.info(
+            'Background instruction complete:  Email sent via email delivery service (or at least queued):\n'+
+            util.inspect({to, toName, subject, from, fromName, bcc},{depth:null})
+          );
+          console.log('Correo electrónico enviado:', info.response);
+        }
+      });
+
     }//ﬁ
 
     // All done!
