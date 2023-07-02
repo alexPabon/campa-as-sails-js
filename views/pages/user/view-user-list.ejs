@@ -19,9 +19,12 @@
                   <%= __('view_users.email') %>
               </th>
               <th scope="col">
+                  <%- partial ('../../partials/tables/sort',{field:'permission', sort:pagination.sort}); %>
                   <%= __('view_users.role') %>
               </th>
-              <th class="w_130px">
+              <th class="w_60px"></th>
+              <th class="w_60px"></th>
+              <th class="w_90px">
                   <%= __('view_users.created') %>
               </th>
           </tr>
@@ -40,9 +43,15 @@
                       <%= __(`roles.${user.permissions[0].role}`) %>
                   <% } %>
               </td>
+              <td class="text-center">
+                  edit
+              </td>
+              <td class="text-center">
+                  del
+              </td>
               <td>
                   <small>
-                      <%= moment(user.createdAt).format('DD/MM/YYYY HH:mm') %>
+                      <%= moment(user.createdAt).format('DD/MM/YYYY') %>
                   </small>
               </td>
           </tr>

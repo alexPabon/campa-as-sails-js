@@ -14,8 +14,28 @@
   background: #c9cbcb;
 }
 
+.w_60px{
+  width: 60px;
+}
+
+.w_70px{
+  width: 70px;
+}
+
+.w_90px{
+  width: 90px;
+}
+
+.w_100px{
+  width: 100px;
+}
+
 .w_130px{
   width: 130px;
+}
+
+.w_150px{
+  width: 150px;
 }
 
 .w_2{

@@ -6,11 +6,13 @@
 <div class="d-inline-flex flex-wrap justify-content-between align-items-center w-100 py-2 px-3">
     <div>
         <p>
-            <%= __('From') %> <%= pagination.from %> <%= __('to') %> <%= pagination.to %>
-            <% if(pagination.totalResults !=''){%>
-                <br><b> <%= __('Results') %> <%= pagination.totalResults %></b>
+            <% if(pagination.from <= pagination.total){%>
+                <%= __('From') %> <%= pagination.from %> <%= __('to') %> <%= pagination.to %>
+                <% if(pagination.totalResults !=''){%>
+                    <br><b> <%= __('Results') %> <%= pagination.totalResults %></b>
+                <%}%>
+                <%= __('Records Total') %> <b><%= pagination.total %></b>
             <%}%>
-            <%= __('Records Total') %> <b><%= pagination.total %></b>
         </p>
     </div>
     <div>

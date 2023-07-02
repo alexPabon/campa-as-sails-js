@@ -39,7 +39,7 @@
     "type": "git",
     "url": "git://github.com/alexander/campanya-project.git"
   },
-  "author": "alexander",
+  "author": "Alexander pabón",
   "license": "",
   "engines": {
     "node": "^20.2"
