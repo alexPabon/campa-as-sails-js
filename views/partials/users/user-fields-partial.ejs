@@ -1,0 +1,119 @@
+<div class="cont_user_fields">
+    <div class="form-group">
+        <label for="full-name"><%= __('Full name') %></label>
+        <input class="form-control" id="full-name" type="text" name="fullName" placeholder="Sturgis P. Sturgeon" value="<%= user.fullName??'' %>"
+               autocomplete="name" required focus-first>
+        <div class="invalid-feedback text-danger"><%= __('err_full_name') %></div>
+        <% if(user){ %>
+            <input class="form-control" id="user_id" type="hidden" name="userId" value="<%= user.id %>">
+            <div class="invalid-feedback text-danger"></div>
+        <% } %>
+    </div>
+    <div class="form-group">
+        <label for="email-address"><%= __('Email address') %></label>
+        <input class="form-control" id="email-address" type="email" name="emailAddress" value="<%= user.emailAddress??'' %>"
+               placeholder="sturgeon@example.com" required autocomplete="email">
+        <div class="invalid-feedback text-danger"><%= __('err_email_address') %></div>
+        <div class="email_exist text-danger invalid-feedback"><%= __('err_email_exist') %></div>
+    </div>
+    <div class="form-group">
+        <label for="password"><%= __('Choose a password') %></label>
+        <span id="generatedPassword" class="ml-1 btn-sm btn-outline-success pointer" data-toggle="tooltip"
+              data-placement="top" title="<%= __('generate password') %>">
+            <i class="fa fa-lock"></i>
+            ***
+        </span>
+        <input class="form-control" id="password" type="text" name="password"
+               placeholder="••••••••"
+               autocomplete="new-password"
+               minlength="6"
+               <% if(!user){ %>required <% } %>>
+        <div class="invalid-feedback text-danger"><%= __('err_password') %></div>
+    </div>
+    <div class="form-group">
+        <label for="role"><%= __('view_users.role') %></label>
+        <select id="role" class="form-control col-5" name="role" required>
+            <option value="" selected><%= __('Select') %></option>
+            <% if(sails.config.userPermission.users){
+                    for(let key in sails.config.userPermission.users){
+            if(key != 'supAdm'){
+            %>
+                <option value="<%= key %>" <% if(user && user.permissions.length > 0 && key === user.permissions[0].role){%> selected <%}%> ><%= __(`roles.${key}`) %></option>
+
+            <% }}} %>
+        </select>
+        <div class="invalid-feedback text-danger"><%= __('err_role') %></div>
+    </div>
+
+</div>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    let userFields = document.getElementsByClassName('cont_user_fields')
+
+    for (let i = 0; i < userFields.length; i++) {
+      let usName = userFields[i].querySelector('input[name="fullName"]');
+      let usEmail = userFields[i].querySelector('input[name="emailAddress"]');
+      let usPass = userFields[i].querySelector('input[name="password"]');
+      let formContainer = userFields[i].closest('form');
+      let btnSubmit = formContainer.querySelector('button[type="submit"]');
+      let errEmail = formContainer.querySelector('div.email_exist');
+
+
+      usName.addEventListener('keyup', function () {
+        this.value = limpiarInput(this.value);
+      });
+
+      usEmail.addEventListener('keyup', function () {
+        this.value = limpiarInput(this.value);
+      });
+
+      usEmail.addEventListener('blur', function () {
+        let emailValid = validarEmail(this.value);
+
+        if (emailValid) {
+          this.nextElementSibling.classList.add('invalid-feedback');
+          let userId = userFields[i].querySelector('input[name="userId"]');
+          let data = {
+            emailAddress: this.value.trim(),
+          }
+
+          if (userId) {
+            data['userId'] = userId.value;
+          }
+
+          axios({
+            method: 'post',
+            url: '/users/verify-email',
+            data: data,
+            headers: {
+              'content-type': 'application/json',
+              'X-CSRF-TOKEN': '<%= _csrf %>',
+            }
+          })
+            .then(function (response) {
+
+              if (response.data.isValid) {
+                btnSubmit ? btnSubmit.removeAttribute('disabled') : '';
+                errEmail ? errEmail.classList.add('invalid-feedback'):'';
+
+              } else {
+                btnSubmit ? btnSubmit.setAttribute('disabled', true) : '';
+                errEmail ? errEmail.classList.remove('invalid-feedback'):'';
+              }
+
+            })
+            .catch(function (error) {
+              console.error(error);
+            });
+
+        } else {
+          this.nextElementSibling.classList.remove('invalid-feedback');
+        }
+      });
+
+      usPass.addEventListener('keyup', function () {
+        this.value = limpiarInput(this.value);
+      });
+    }
+  });
+</script>

@@ -54,3 +54,27 @@ function getResultsTable() {
     window.location.href = `${paramsTable.basePath}?page=1&perPage=${paramsTable.perPage}&search=${paramsTable.search}`;
   }
 }
+
+function limpiarInput(input) {
+
+  input = input.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
+
+  input = input.replace(/on\w+="[^"]+"/gi, '');
+
+  input = input.replace(/<\/?[^>]+>/gi, '');
+
+  input = input.replace(/=[\s]*(['"])(javascript:[^'"]+)(['"])/gi, '');
+
+  input = input.replace(/url[\s]*\((['"]?)(javascript:[^'"\)]+)(['"]?)\)/gi, '');
+
+  return input;
+}
+
+function validarEmail(email) {
+
+  const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  return regex.test(email);
+}
+
+

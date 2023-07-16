@@ -1,66 +1,169 @@
 <div id="user-list">
 
-  <div class="container pt-2 pb-3">
+    <div class="container pt-2 pb-3">
 
-    <h2 class="text-center text-or pb-2"><%= __('view_users.title_list_users') %></h2>
+        <h2 class="text-center text-or pb-2 userList"><%= __('view_users.title_list_users') %></h2>
 
-      <div>
-          <%- partial ('../../partials/tables/PerPageAndSearch',{pagination:pagination}); %>
-      </div>
-      <table class="table">
-          <thead class="thead-light">
-          <tr>
-              <th scope="col">
-                  <%- partial ('../../partials/tables/sort',{field:'fullName', sort:pagination.sort}); %>
-                  <%= __('view_users.name') %>
-              </th>
-              <th scope="col">
-                  <%- partial ('../../partials/tables/sort',{field:'emailAddress', sort:pagination.sort}); %>
-                  <%= __('view_users.email') %>
-              </th>
-              <th scope="col">
-                  <%- partial ('../../partials/tables/sort',{field:'permission', sort:pagination.sort}); %>
-                  <%= __('view_users.role') %>
-              </th>
-              <th class="w_60px"></th>
-              <th class="w_60px"></th>
-              <th class="w_90px">
-                  <%= __('view_users.created') %>
-              </th>
-          </tr>
-          </thead>
-          <tbody>
-          <% allUsers.forEach((user, index)=>{ %>
-          <tr>
-              <td class="font-weight-bold">
-                  <%= user.fullName %>
-              </td>
-              <td>
-                  <%= user.emailAddress %>
-              </td>
-              <td>
-                  <% if(user.permissions.length > 0){ %>
-                      <%= __(`roles.${user.permissions[0].role}`) %>
-                  <% } %>
-              </td>
-              <td class="text-center">
-                  edit
-              </td>
-              <td class="text-center">
-                  del
-              </td>
-              <td>
-                  <small>
-                      <%= moment(user.createdAt).format('DD/MM/YYYY') %>
-                  </small>
-              </td>
-          </tr>
-          <% }); %>
-          </tbody>
-      </table>
-      <div>
-          <%- partial ('../../partials/tables/BuilderLinksPartial',{pagination:pagination}); %>
-      </div>
-  </div>
+        <% if(can.create){ %>
+            <div>
+                <div class="py-1">
+                  <span id="btnAddUser" class="btn-sm border-primary btn-primary py-1 px-3 pointer">
+                      <%= __('Add User') %>
+                      <i class="fa fa-plus-circle m-0 p-0"></i>
+                  </span>
+                </div>
+                <div id="contAddForm" class="d-none">
+                    <%- partial('../../partials/users/add-user-partial'); %>
+                </div>
+            </div>
+        <% } %>
+        <div class="userList">
+            <div>
+                <%- partial('../../partials/tables/PerPageAndSearch', {pagination: pagination}); %>
+            </div>
+            <table id="contUsers" class="table">
+                <thead class="thead-light">
+                <tr>
+                    <th scope="col">
+                        <%- partial('../../partials/tables/sort', {field: 'fullName', sort: pagination.sort}); %>
+                        <%= __('view_users.name') %>
+                    </th>
+                    <th scope="col">
+                        <%- partial('../../partials/tables/sort', {field: 'emailAddress', sort: pagination.sort}); %>
+                        <%= __('view_users.email') %>
+                    </th>
+                    <th scope="col">
+                        <%- partial('../../partials/tables/sort', {field: 'permission', sort: pagination.sort}); %>
+                        <%= __('view_users.role') %>
+                    </th>
+                    <%if(can.edit){%>
+                        <th class="w_60px"></th>
+                    <%}%>
+                    <%if(can.delete){%>
+                    <th class="w_60px"></th>
+                    <%}%>
+                    <th class="w_90px">
+                        <%= __('view_users.created') %>
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+                <% allUsers.forEach((user, index)=>{ %>
+                    <tr>
+                        <td class="font-weight-bold">
+                            <%= user.fullName %>
+                        </td>
+                        <td>
+                            <%= user.emailAddress %>
+                        </td>
+                        <td>
+                            <% if(user.permissions.length > 0){ %>
+                                <%= __(`roles.${user.permissions[0].role}`) %>
+                            <% } %>
+                        </td>
+                        <%if(can.edit){%>
+                            <td class="text-center">
+                                <a href="/users/edit/<%=user.id%>">
+                                    <span class="btn-sm btn-outline-info pointer">
+                                        <i class="fa fa-pencil"></i>
+                                    </span>
+                                </a>
+                            </td>
+                        <%}%>
+                        <%if(can.delete){%>
+                            <td class="text-center">
+                              <span class="btn-sm btn-outline-danger pointer userDelete"
+                                    usId="<%= user.id%>"
+                                    field="<%= user.fullName %> - <%= user.emailAddress %>"
+                              >
+                                  <i class="fa fa-trash-o"></i>
+                              </span>
+                            </td>
+                        <%}%>
+                        <td>
+                            <small>
+                                <%= moment(user.createdAt).format('DD/MM/YYYY') %>
+                            </small>
+                        </td>
+                    </tr>
+                <% }); %>
+                </tbody>
+            </table>
+            <div>
+                <%- partial('../../partials/tables/BuilderLinksPartial', {pagination: pagination}); %>
+            </div>
+        </div>
+    </div>
 </div>
+<script>
+    localStorage.setItem('userList',  window.location);
+
+    document.addEventListener("DOMContentLoaded", () => {
+      let userDelete = document.getElementsByClassName('userDelete')
+
+
+
+      for(let i=0; i< userDelete.length; i++){
+
+        userDelete[i].addEventListener('click',function (){
+
+          let id = this.getAttribute('usId');
+          let field = this.getAttribute('field');
+
+          let data = {
+            userId:id.trim(),
+          }
+
+          swal({
+            title: "<%= __('Are you sure?') %>",
+            text: `<%= __('Once deleted, you will not be able to recover this data!') %>\n\n <%= __('It will be eliminated') %>: ${field}`,
+            icon: "warning",
+            buttons: ["<%= __('Cancel') %>", "<%= __('Confirm') %>"],
+            dangerMode: true,
+          })
+            .then((willDelete) => {
+              if (willDelete) {
+
+                axios({
+                  method: 'post',
+                  url: '/users/delete',
+                  data: data,
+                  headers: {
+                    'content-type': 'application/json',
+                    'X-CSRF-TOKEN': '<%= _csrf %>',
+                  }
+                })
+                  .then(function (response) {
+
+                    swal("<%= __('has been deleted') %>", {
+                      icon: "success",
+                      buttons:false
+                    });
+                    location.replace(localStorage.userList??'/')
+                  })
+                  .catch(function (error) {
+                    console.error(error);
+
+                    let msn = error.response.data.message;
+                    if(msn == undefined){
+                      msn = error.message;
+                    }
+
+                    swal(`${error.response.status} - ${msn}`, {
+                      icon: "error",
+                      buttons:false
+                    });
+
+                  });
+
+              }
+            });
+
+
+
+        })
+      }
+
+    });
+</script>
 <%- /* Expose locals as `window.SAILS_LOCALS` :: */ exposeLocalsToBrowser() %>

@@ -1,4 +1,5 @@
 const {generatePaginationLinks} = require("../../utils/paginationUtil");
+const {getUserCanDo} = require("../../utils/userCanDoUtils");
 const url = require("url");
 module.exports = {
 
@@ -25,7 +26,7 @@ module.exports = {
     this.res.locals.me.sectName = section.name;
     this.res.locals.me.subSectName = section.subSections[0].name;
     let search = this.req.query.search??'';
-    let orderBy = this.req.query.sort??'createdAt ASC';
+    let orderBy = this.req.query.sort??'createdAt DESC';
     let perPage = (this.req.query.perPage && parseInt(this.req.query.perPage) > 0)?parseInt(this.req.query.perPage):25;
     let page = (this.req.query.page && parseInt(this.req.query.page) > 0)?parseInt(this.req.query.page):1;
     let goToPage = parseInt(((page -1) * perPage));
@@ -39,7 +40,7 @@ module.exports = {
     ]
 
     if(!sortPermit.includes(orderBy))
-      orderBy = 'createdAt ASC';
+      orderBy = 'createdAt DESC';
 
     if(orderBy === 'permission DESC' || orderBy === 'permission ASC'){
 
@@ -98,10 +99,6 @@ module.exports = {
 
       // paginate
       let endIndex = (goToPage + perPage);
-      console.log('***********************************')
-      console.log(goToPage);
-      console.log(endIndex);
-      console.log('********* end ********************')
       const paginatedUserList = userList.slice(goToPage, endIndex);
 
       userList = paginatedUserList;
@@ -156,7 +153,6 @@ module.exports = {
       }
     });
 
-
     let params = {
       total:total,
       totalResults:totalFilter,
@@ -168,14 +164,15 @@ module.exports = {
     };
 
     let pagination = generatePaginationLinks(params);
+    let userCanDo = getUserCanDo(this.req.me, section.subSections[0].name);
 
-    console.log(pagination);
-
+    console.log(userCanDo);
 
     return {
       allUsers:userList,
       moment: require('moment'),
-      pagination: pagination
+      pagination: pagination,
+      can: userCanDo
     };
 
   }

@@ -1,0 +1,112 @@
+<div id="contAllPermissions" class="border border-secondary rounded-bottom p-2">
+    <%
+        let usPerm = sails.config.userPermission;
+        let usSect = sails.config.userPermission.sections;
+    %>
+    <% if(userSections && Object.keys(userSections).length > 0){ %>
+        <div>
+            <% for (let section in userSections){
+            if (userSections.hasOwnProperty(section)) {
+              let findSectParent = usSect.find(sect => sect.name === section);
+            %>
+
+                <h5 class="text-center text-primary font-weight-bold"><%= __(`Menu.${section}.name`) %></h5>
+                <div class="m-1 py-2 px-1 d-flex flex-wrap">
+
+                    <% if(userSections[`${section}`].length > 0){
+
+                        for(let module of userSections[`${section}`]){
+                            if(((module.section == section && (findSectParent && findSectParent.url !='')) || module.section != section)){ %>
+                                <div class="rounded border border-info p-2 m-2">
+                                    <h6 class="text-center font-weight-bold border-bottom border-secondary pb-1">
+                                        <%
+                                            let name = module.section.split('.', 2);
+                                        if(name.length > 1){ %>
+                                            <%= __(`Menu.${module.section}`) %>
+                                        <% }else{ %>
+                                            <%= __(`Menu.${name[0]}.name`) %>
+                                        <% } %>
+                                    </h6>
+                                    <div>
+                                        <%
+                                            let usCan = usPerm.canDo[`${module.role}`];
+
+                                            if(Object.keys(usCan).length > 0){
+                                              for (let can in usCan){
+
+
+                                        %>
+                                            <div>
+                                                <input type="radio" id="<%= module.section+'_'+can %>"
+                                                       class="canDoList"
+                                                       perId="<%= module.id %>"
+                                                       name="<%= module.section %>"
+                                                       value="<%= usCan[`${can}`] %>"
+                                                       <%if(usCan[`${can}`] == module.permission){%> checked <%}%>>
+                                                <label for="<%= module.section+'_'+can %>"><%= __(`canDo.${can}`) %></label>
+                                            </div>
+                                        <%     }
+                                            }
+                                        %>
+                                    </div>
+                                </div>
+                    <% }}} %>
+                </div>
+            <% }} %>
+        </div>
+        <div id="errorSections" class="mt-2 alert alert-danger d-none"><small>errores</small></div>
+    <% }else{ %>
+        <div class="mt-2 alert alert-info">El usuario no tienes permisos asignados.</div>
+    <% } %>
+</div>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    let checkPermissions = document.getElementsByClassName('canDoList')
+    let errorSection = document.getElementById('errorSections');
+
+    for(let i=0; i< checkPermissions.length; i++){
+
+      checkPermissions[i].addEventListener('change',function (){
+
+        let contCheck = this.closest('div');
+        let id = this.getAttribute('perId');
+        let name = this.getAttribute('name');
+        let val = this.value;
+
+        let data = {
+          permissionId:id,
+          permissionValue:val,
+          section:name
+        }
+
+        axios({
+          method: 'post',
+          url: '/users/edit-permission',
+          data: data,
+          headers: {
+            'content-type': 'application/json',
+            'X-CSRF-TOKEN': '<%= _csrf %>',
+          }
+        })
+          .then(function (response) {
+
+          })
+          .catch(function (error) {
+            console.error(error);
+
+            let msn = error.response.data.message;
+            if(msn == undefined){
+              msn = error.message;
+            }
+            contCheck.classList.add('alert-danger');
+            errorSection.classList.remove('d-none');
+            errorSection.querySelector('small').innerHTML = `${error.response.status} - ${msn}`;
+        });
+
+      })
+    }
+
+  });
+</script>
+
+

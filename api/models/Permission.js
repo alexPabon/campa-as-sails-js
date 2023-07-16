@@ -62,21 +62,26 @@ module.exports = {
     let getRoleVal = sails.config.userPermission.users[`${role}`];
 
     userPerm.forEach(section => {
-      permissionGenerate.push({
-        userId: userId,
-        section: section.name,
-        role: role,
-        permission: getRoleVal
-      });
 
-      section.subSections.forEach(subSection =>{
+      if(section.rolesPermit.includes(role)) {
         permissionGenerate.push({
           userId: userId,
-          section: subSection.name,
+          section: section.name,
           role: role,
           permission: getRoleVal
         });
-      })
+      }
+
+      if(section.rolesPermit.includes(role)) {
+        section.subSections.forEach(subSection => {
+          permissionGenerate.push({
+            userId: userId,
+            section: subSection.name,
+            role: role,
+            permission: getRoleVal
+          });
+        })
+      }
     });
 
 
@@ -117,16 +122,22 @@ module.exports = {
       // If it does not contain the userId and the section, it
       // creates it with the user's data and the section.
       if (updatePermission) {
-        updatedRole.push(updatePermission);
+        if(section.rolesPermit.includes(role)) {
+          updatedRole.push(updatePermission);
+        }else{
+          let removePermission = await Permission.destroyOne({id:updatePermission.id});
+        }
       } else {
-        const newRole = await Permission.create({
-          userId: userId,
-          section: section.name,
-          role: role,
-          permission: getRoleVal
-        }).fetch();
+        if(section.rolesPermit.includes(role)) {
+          const newRole = await Permission.create({
+            userId: userId,
+            section: section.name,
+            role: role,
+            permission: getRoleVal
+          }).fetch();
 
-        updatedRole.push(newRole);
+          updatedRole.push(newRole);
+        }
       }
 
       //sub sections
@@ -142,16 +153,22 @@ module.exports = {
         // If it does not contain the userId and the section, it
         // creates it with the user's data and the section.
         if (updatePermission) {
-          updatedRole.push(updatePermission);
+          if(section.rolesPermit.includes(role)) {
+            updatedRole.push(updatePermission);
+          }else{
+            let subRemovePermission = await Permission.destroyOne({id:updatePermission.id});
+          }
         } else {
-          const newRole = await Permission.create({
-            userId: userId,
-            section: subSection.name,
-            role: role,
-            permission: getRoleVal
-          }).fetch();
+          if(section.rolesPermit.includes(role)) {
+            const newRole = await Permission.create({
+              userId: userId,
+              section: subSection.name,
+              role: role,
+              permission: getRoleVal
+            }).fetch();
 
-          updatedRole.push(newRole);
+            updatedRole.push(newRole);
+          }
         }
 
       }));

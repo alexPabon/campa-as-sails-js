@@ -21,5 +21,11 @@ module.exports.policies = {
   'legal/view-terms': true,
   'legal/view-privacy': true,
   'deliver-contact-form-message': true,
+  'users/users-list':'access/user/can-see-user-police',
+  'users/create-user-controller':'access/user/can-create-user-police',
+  'users/edit-user-view':'access/user/can-edit-user-police',
+  'users/edit-user-controller':'access/user/can-edit-user-police',
+  'users/edit-user-permission-controller':'access/user/can-edit-user-police',
+  'users/delete-user-controller':'access/user/can-delete-user-police'
 
 };

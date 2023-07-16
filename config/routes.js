@@ -39,6 +39,12 @@ module.exports.routes = {
 
   // users
   'GET /users/list':      { action: 'users/users-list' },
+  'POST /users/verify-email':      { action: 'users/verify-user-email-controller' },
+  'POST /users/create-user':      { action: 'users/create-user-controller' },
+  'GET /users/edit/:userId':      { action: 'users/edit-user-view' },
+  'POST /users/edit':      { action: 'users/edit-user-controller' },
+  'POST /users/edit-permission':      { action: 'users/edit-user-permission-controller' },
+  'POST /users/delete':      { action: 'users/delete-user-controller'},
 
 
   //  ╔╦╗╦╔═╗╔═╗  ╦═╗╔═╗╔╦╗╦╦═╗╔═╗╔═╗╔╦╗╔═╗   ┬   ╔╦╗╔═╗╦ ╦╔╗╔╦  ╔═╗╔═╗╔╦╗╔═╗

@@ -8,7 +8,7 @@
 	"Sign up": "Registrarse",
 	"create_an_account": "Crea una cuenta",
 	"Full name": "Nombre completo",
-	"Email address": "Dirección de email",
+	"Email address": "Email",
 	"Choose a password": "elegir una contraseña",
 	"Confirm password": "Confirmar Contraseña",
 	"err_full_name": "Por favor ingresa tu nombre completo.",
@@ -46,10 +46,7 @@
 	"Menu": {
 		"users": {
 			"name": "Usuarios",
-			"list": "Listado",
-			"listYear": "por año",
-			"listMont": "por mes",
-			"listwithyear": "listwithyear"
+			"list": "Listado"
 		},
 		"clients": {
 			"name": "Clientes",
@@ -61,6 +58,13 @@
 		"adm": "Administrador",
 		"editor": "Editor",
 		"guest": "Invitado"
+	},
+	"canDo": {
+		"all": "Todo",
+		"delEdit": "Borrar-Editar",
+		"edit": "Editar",
+		"justSee": "Solo ver",
+		"none": "Nada"
 	},
 	"view_users": {
 		"title_list_users": "Listado de Usuarios y Roles",
@@ -92,5 +96,20 @@
 	"error_new_password": "Su nueva contraseña y confirmación no coinciden.",
 	"Submit": "Enviar",
 	"Remember your password?": "¿Recuerdas tu contraseña?",
-	"Login": "Iniciar sesión"
+	"Login": "Iniciar sesión",
+	"Add User": "Añadir Usuario",
+	"generate password": "Generar contraseña",
+	"Select": "Seleccione",
+	"err_role": "Selecciona un role de usuario",
+	"add user": "Añadir Usuario",
+	"Edit": "Editar",
+	"Edit user": "Editar usuario",
+	"Save": "Guardar",
+	"Edit permissions by sections": "Editar permisos por secciones",
+	"Each change is applied directly to the user": "Cada cambio se aplica directamente al usuario.",
+	"Are you sure?": "¿Estas seguro?",
+	"Once deleted, you will not be able to recover this data!": "¡Una vez eliminados, no podrá recuperar estos datos!",
+	"It will be eliminated": "Será eliminado",
+	"Confirm": "Confirmar",
+	"has been deleted": "¡ha sido eliminado!"
 }

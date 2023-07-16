@@ -49,3 +49,14 @@
 .pointer{
   cursor: pointer;
 }
+
+.fa-spinner {
+  font-size: 24px; /* Ajusta el tamaño según tus necesidades */
+  animation: spin 1.4s infinite linear; /* Configura la animación */
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+

@@ -1,0 +1,160 @@
+<div class="col-12 col-md-10 col-lg-7 col-xl-6 m-auto">
+    <h6 class="card-header bg-dark text-center text-light">
+        <%= __('add user') %>
+    </h6>
+    <div class="card-body">
+        <form id="addUser">
+            <%- partial ('../../partials/users/user-fields-partial',{user:''}); %>
+            <div class="form-group mt-5">
+                <button type="reset" class="col-4 mr-1 btn btn-outline-secondary"><%= __('Cancel') %></button>
+                <button type="submit" class="col-4 ml-1 btn btn-dark">
+                    <%= __('Create account') %>
+                    <span class="d-none">
+                        <i class="fa fa-spinner"></i>
+                    </span>
+                </button>
+            </div>
+            <div class="error_request alert alert-danger d-none"></div>
+        </form>
+    </div>
+</div>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    let formAdd = document.getElementById('addUser');
+    let createUser = formAdd.querySelector('button[type="submit"]');
+    let cancelForm = formAdd.querySelector('button[type="reset"]');
+    let sendInput = formAdd.getElementsByTagName('input');
+    let selectRole = formAdd.querySelector('select[name="role"]');
+    let btnAddUser = document.getElementById('btnAddUser');
+    let userLists = document.getElementsByClassName('userList');
+    let contAddForm = document.getElementById('contAddForm');
+    let tableListUsers = document.getElementById('contUsers');
+
+    createUser.addEventListener('click', function (e){
+      e.preventDefault();
+      let sendFlag = true;
+      let data = {};
+
+      for(let i=0; i<sendInput.length; i++){
+        let isEmail = sendInput[i].getAttribute('type');
+        sendInput[i].nextElementSibling.classList.add('invalid-feedback');
+
+        if(isEmail == 'email' && sendInput[i].value != ''){
+
+          let emailValid = validarEmail(sendInput[i].value);
+
+          if(!emailValid){
+            sendInput[i].nextElementSibling.classList.remove('invalid-feedback');
+            sendFlag = false;
+          }
+
+        }else if((isEmail == 'email' && sendInput[i].value == '') || sendInput[i].value == ''){
+          sendInput[i].nextElementSibling.classList.remove('invalid-feedback');
+          sendFlag = false;
+        }
+
+        if(sendInput[i].getAttribute('name')) {
+          data[`${sendInput[i].getAttribute('name')}`] = sendInput[i].value;
+        }
+      }
+
+      selectRole.nextElementSibling.classList.add('invalid-feedback');
+
+      if(selectRole.getAttribute('name')) {
+        data[`${selectRole.getAttribute('name')}`] = selectRole.value;
+      }
+
+      if(selectRole.value == ''){
+        selectRole.nextElementSibling.classList.remove('invalid-feedback');
+        sendFlag = false;
+      }
+
+      console.log(data);
+
+      if(sendFlag){
+        createUser.querySelector('span').classList.remove('d-none');
+
+        axios({
+          method: 'post',
+          url: './create-user',
+          data: data,
+          headers: {
+            'content-type': 'application/json',
+            'X-CSRF-TOKEN': '<%= _csrf %>',
+          }
+        })
+          .then(function (response) {
+
+            console.log(response);
+            createUser.querySelector('span').classList.add('d-none');
+            let tbody = tableListUsers.querySelector('tbody');
+            let newRow = drawRow(response.data);
+
+            // Insertar la nueva fila al inicio del tbody
+            if (tbody.children.length > 0) {
+              tbody.insertBefore(newRow, tbody.children[0]);
+            } else {
+              tbody.appendChild(nuevaFila);
+            }
+
+            cancelForm.click();
+
+          })
+          .catch(function (error) {
+            console.error(error);
+            let resError = formAdd.querySelector('div.error_request');
+
+            resError.classList.remove('d-none');
+            resError.innerHTML = error.response.status +' - '+ error.response.data;
+
+            createUser.querySelector('span').classList.add('d-none');
+
+          });
+
+      }else {
+        createUser.querySelector('span').classList.add('d-none');
+      }
+    });
+
+    // btns
+    btnAddUser.addEventListener('click', function (){
+
+      for(let i=0; i<userLists.length; i++){
+        userLists[i].classList.add('d-none');
+      }
+
+      this.classList.add('d-none');
+      contAddForm.classList.remove('d-none');
+    });
+
+    cancelForm.addEventListener('click', function (){
+
+      for(let i=0; i<userLists.length; i++){
+        userLists[i].classList.remove('d-none');
+      }
+
+      btnAddUser.classList.remove('d-none');
+      contAddForm.classList.add('d-none');
+    });
+
+  });
+
+  function drawRow(data){
+
+    let newRow =  document.createElement("tr");
+    newRow.innerHTML = `<td class="font-weight-bold">
+                            ${data.user.fullName}
+                        </td>
+                        <td>
+                            ${data.user.emailAddress}
+                        </td>
+                        <td>
+                            ${data.role}
+                        </td>
+                        <td></td>
+                        <td></td>
+                        <td></td>`;
+
+    return newRow
+  }
+</script>

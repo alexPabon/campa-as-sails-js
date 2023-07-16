@@ -16,7 +16,7 @@ module.exports = {
       userId: this.req.session.userId,
       me: this.req.me,
       session: this.req.session,
-      req: this.req.lang,
+      req: this.req,
     };
 
     this.req.setLocale('en');

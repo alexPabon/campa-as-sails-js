@@ -2,6 +2,7 @@
     <div>
         <div class="form-group p-1 rounded bg_light_dark">
             <select id="selPerPage" class="form-control perPage">
+                <option value="15" class="py-3" <% if(pagination.perPage == 15) {%> selected <%}%>>15</option>
                 <option value="25" class="py-3" <% if(pagination.perPage == 25) {%> selected <%}%>>25</option>
                 <option value="50" class="py-3" <% if(pagination.perPage == 50) {%> selected <%}%>>50</option>
                 <option value="100" class="py-3" <% if(pagination.perPage == 100) {%> selected <%}%>>100</option>
