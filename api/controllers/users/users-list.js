@@ -73,14 +73,15 @@ module.exports = {
 
 
       // sort by permissions
+      let cont = 0;
       userList.sort((userA, userB) => {
         const permissionsA = userA.permissions.length > 0 ? userA.permissions[0] : null;
         const permissionsB = userB.permissions.length > 0 ? userB.permissions[0] : null;
 
         if (permissionsA && permissionsB && filter.orderBy === 'permission DESC') {
-          return permissionsB.id - permissionsA.id;
+          return (permissionsA.role < permissionsB.role) ? 1 : -1;
         } else if (permissionsA && permissionsB && filter.orderBy === 'permission ASC') {
-          return permissionsA.id - permissionsB.id;
+          return (permissionsA.role > permissionsB.role) ? 1 : -1;
         } else if (permissionsA) {
           return -1;
         } else if (permissionsB) {
