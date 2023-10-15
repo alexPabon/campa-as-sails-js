@@ -11,6 +11,13 @@ module.exports.userPermission = {
     guest: guest
   },
   canDo: {
+    supAdm:{
+      all:spAd,
+      delEdit: 1993,
+      edit: 1992,
+      justSee: 1991,
+      none: 1990
+    },
     adm: {
       all: adm,
       delEdit: 480,
@@ -47,7 +54,7 @@ module.exports.userPermission = {
     },
     {
       name: 'clients',
-      url: '/clients/listados',
+      url: '/clients/list',
       rolesPermit: ["adm", "editor", "guest"],
       subSections: [],
     },

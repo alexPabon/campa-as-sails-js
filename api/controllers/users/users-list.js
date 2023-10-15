@@ -1,35 +1,28 @@
-const {generatePaginationLinks} = require("../../utils/paginationUtil");
+const {generatePaginationLinks, getFilters} = require("../../utils/paginationUtil");
 const {getUserCanDo} = require("../../utils/userCanDoUtils");
 const url = require("url");
 module.exports = {
 
-
   friendlyName: 'View user list page',
 
-
   description: 'Display the "users-list" page.',
-
 
   exits: {
 
     success: {
       viewTemplatePath: 'pages/user/view-user-list',
-      description: 'Display the welcome page for authenticated users.'
+      description: 'List of users and roles, except users with super administrator role.'
     },
 
   },
 
-
   fn: async function () {
 
-    let section = sails.config.userPermission.sections[0];
+    const section = sails.config.userPermission.sections[0];
+    const subSectionName = section.subSections[0].name;
     this.res.locals.me.sectName = section.name;
-    this.res.locals.me.subSectName = section.subSections[0].name;
-    let search = this.req.query.search??'';
-    let orderBy = this.req.query.sort??'createdAt DESC';
-    let perPage = (this.req.query.perPage && parseInt(this.req.query.perPage) > 0)?parseInt(this.req.query.perPage):25;
-    let page = (this.req.query.page && parseInt(this.req.query.page) > 0)?parseInt(this.req.query.page):1;
-    let goToPage = parseInt(((page -1) * perPage));
+    this.res.locals.me.subSectName = subSectionName;
+    const filter = getFilters(this.req);
     let userList = [];
     let totalFilter = '';
     const sortPermit = [
@@ -39,27 +32,27 @@ module.exports = {
       'permission ASC', 'permission DESC',
     ]
 
-    if(!sortPermit.includes(orderBy))
-      orderBy = 'createdAt DESC';
+    if (!sortPermit.includes(filter.orderBy))
+      filter.orderBy = 'createdAt DESC';
 
-    if(orderBy === 'permission DESC' || orderBy === 'permission ASC'){
+    if (filter.orderBy === 'permission DESC' || filter.orderBy === 'permission ASC') {
 
       // filter
-      if(search == '') {
+      if (filter.search == '') {
         userList = await User.find({
           where: {
             isSuperAdmin: 0,
             id: {'!=': this.req.session.userId}
           }
         }).populate('permissions', {limit: 1});
-      }else{
-        search = search.trim();
+      } else {
+        filter.search = filter.search.trim();
 
         userList = await User.find({
           where: {
             or: [
-              {fullName: {contains: search}},
-              {emailAddress: {contains: search}}
+              {fullName: {contains: filter.search}},
+              {emailAddress: {contains: filter.search}}
             ],
             isSuperAdmin: 0,
             id: {'!=': this.req.session.userId}
@@ -69,8 +62,8 @@ module.exports = {
         totalFilter = await User.count({
           where: {
             or: [
-              {fullName: {contains: search}},
-              {emailAddress: {contains: search}}
+              {fullName: {contains: filter.search}},
+              {emailAddress: {contains: filter.search}}
             ],
             isSuperAdmin: 0,
             id: {'!=': this.req.session.userId}
@@ -84,11 +77,11 @@ module.exports = {
         const permissionsA = userA.permissions.length > 0 ? userA.permissions[0] : null;
         const permissionsB = userB.permissions.length > 0 ? userB.permissions[0] : null;
 
-        if (permissionsA && permissionsB && orderBy === 'permission DESC') {
+        if (permissionsA && permissionsB && filter.orderBy === 'permission DESC') {
           return permissionsB.id - permissionsA.id;
-        }else if (permissionsA && permissionsB && orderBy === 'permission ASC') {
+        } else if (permissionsA && permissionsB && filter.orderBy === 'permission ASC') {
           return permissionsA.id - permissionsB.id;
-        }else if (permissionsA) {
+        } else if (permissionsA) {
           return -1;
         } else if (permissionsB) {
           return 1;
@@ -98,44 +91,44 @@ module.exports = {
       });
 
       // paginate
-      let endIndex = (goToPage + perPage);
-      const paginatedUserList = userList.slice(goToPage, endIndex);
+      let endIndex = (filter.goToPage + filter.perPage);
+      const paginatedUserList = userList.slice(filter.goToPage, endIndex);
 
       userList = paginatedUserList;
 
 
-    }else {
+    } else {
 
 
       // *************************  orderby != permission ***********************
       // ***********************************************************************
-      if (search == '') {
+      if (filter.search == '') {
         userList = await User.find({
           where: {
             isSuperAdmin: 0,
             id: {'!=': this.req.session.userId}
           }
-        }).populate('permissions', {limit: 1}).sort(orderBy).limit(perPage).skip(goToPage);
+        }).populate('permissions', {limit: 1}).sort(filter.orderBy).limit(filter.perPage).skip(filter.goToPage);
       } else {
 
-        search = search.trim();
+        filter.search = filter.search.trim();
 
         userList = await User.find({
           where: {
             or: [
-              {fullName: {contains: search}},
-              {emailAddress: {contains: search}}
+              {fullName: {contains: filter.search}},
+              {emailAddress: {contains: filter.search}}
             ],
             isSuperAdmin: 0,
             id: {'!=': this.req.session.userId}
           }
-        }).populate('permissions', {limit: 1}).sort(orderBy).limit(perPage).skip(goToPage);
+        }).populate('permissions', {limit: 1}).sort(filter.orderBy).limit(filter.perPage).skip(filter.goToPage);
 
         totalFilter = await User.count({
           where: {
             or: [
-              {fullName: {contains: search}},
-              {emailAddress: {contains: search}}
+              {fullName: {contains: filter.search}},
+              {emailAddress: {contains: filter.search}}
             ],
             isSuperAdmin: 0,
             id: {'!=': this.req.session.userId}
@@ -149,33 +142,29 @@ module.exports = {
     let total = await User.count({
       where: {
         isSuperAdmin: 0,
-        id: { '!=': this.req.session.userId }
+        id: {'!=': this.req.session.userId}
       }
     });
 
     let params = {
-      total:total,
-      totalResults:totalFilter,
-      baseUrl:section.subSections[0].url,
-      perPage:perPage,
-      currentPage:page,
-      search:search,
-      orderBy:orderBy
+      total: total,
+      totalResults: totalFilter,
+      baseUrl: section.subSections[0].url,
+      perPage: filter.perPage,
+      currentPage: filter.page,
+      search: filter.search,
+      orderBy: filter.orderBy
     };
 
     let pagination = generatePaginationLinks(params);
-    let userCanDo = getUserCanDo(this.req.me, section.subSections[0].name);
-
-    console.log(userCanDo);
+    let userCanDo = getUserCanDo(this.req.me, subSectionName);
 
     return {
-      allUsers:userList,
+      allUsers: userList,
       moment: require('moment'),
       pagination: pagination,
       can: userCanDo
     };
 
   }
-
-
 };

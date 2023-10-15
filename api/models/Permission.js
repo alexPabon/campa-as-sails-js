@@ -12,8 +12,11 @@ module.exports = {
     //  ╠═╝╠╦╝║║║║║ ║ ║╚╗╔╝║╣ ╚═╗
     //  ╩  ╩╚═╩╩ ╩╩ ╩ ╩ ╚╝ ╚═╝╚═╝
 
+    createdAt: { type: 'number', autoCreatedAt: true, },
+    updatedAt: { type: 'number', autoUpdatedAt: true, },
+
     userId: {
-      type: 'integer',
+      type: 'number',
       required: false,
       unique: false,
     },
@@ -31,7 +34,7 @@ module.exports = {
     },
 
     permission: {
-      type: 'integer',
+      type: 'number',
       defaultsTo: 100
     },
 
@@ -63,7 +66,7 @@ module.exports = {
 
     userPerm.forEach(section => {
 
-      if(section.rolesPermit.includes(role)) {
+      if(section.rolesPermit.includes(role) || role == 'supAdm') {
         permissionGenerate.push({
           userId: userId,
           section: section.name,
@@ -72,7 +75,7 @@ module.exports = {
         });
       }
 
-      if(section.rolesPermit.includes(role)) {
+      if(section.rolesPermit.includes(role) || role == 'supAdm') {
         section.subSections.forEach(subSection => {
           permissionGenerate.push({
             userId: userId,
@@ -128,7 +131,7 @@ module.exports = {
           let removePermission = await Permission.destroyOne({id:updatePermission.id});
         }
       } else {
-        if(section.rolesPermit.includes(role)) {
+        if(section.rolesPermit.includes(role) || role == 'supAdm') {
           const newRole = await Permission.create({
             userId: userId,
             section: section.name,
@@ -159,7 +162,7 @@ module.exports = {
             let subRemovePermission = await Permission.destroyOne({id:updatePermission.id});
           }
         } else {
-          if(section.rolesPermit.includes(role)) {
+          if(section.rolesPermit.includes(role) || role == 'supAdm') {
             const newRole = await Permission.create({
               userId: userId,
               section: subSection.name,

@@ -83,5 +83,20 @@ module.exports = {
     }
 
     return paginate;
+  },
+  getFilters: function(req) {
+    let search = req.query.search??'';
+    let orderBy = req.query.sort??'id DESC';
+    let perPage = (req.query.perPage && parseInt(req.query.perPage) > 0)?parseInt(req.query.perPage):25;
+    let page = (req.query.page && parseInt(req.query.page) > 0)?parseInt(req.query.page):1;
+    let goToPage = (page -1) * perPage;
+
+    return {
+      search: search,
+      orderBy: orderBy,
+      perPage: perPage,
+      page: page,
+      goToPage: goToPage,
+    }
   }
 };
