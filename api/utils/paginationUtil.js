@@ -18,6 +18,7 @@ module.exports = {
     const totalPages = (params.totalResults != '')? Math.ceil((params.totalResults/params.perPage)): Math.ceil((params.total/params.perPage));
     let label = 1;
     params['currentPage'] = parseInt(params.currentPage);
+    params['orderBy'] = params.orderBy.replace(/\s/g, '%20');
 
     to = (params.totalResults != '' && to > params.totalResults) ? (to - (to - params.totalResults)) : to;
     to = (to > params.total) ? (to - (to - params.total)) : to;
@@ -92,7 +93,7 @@ module.exports = {
     let goToPage = (page -1) * perPage;
 
     return {
-      search: search,
+      search: search.replace(/[^\w\s@._-]/gi, ''),
       orderBy: orderBy,
       perPage: perPage,
       page: page,

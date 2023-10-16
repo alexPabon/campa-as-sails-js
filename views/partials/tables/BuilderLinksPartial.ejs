@@ -21,7 +21,7 @@
                 <ul class="pagination">
                     <li class="page-item">
                         <% if(pagination.prev){ %>
-                            <a class="page-link" href="<%= pagination.prev %>" aria-label="Previous">
+                            <a class="page-link btn" href="<%= pagination.prev %>" aria-label="Previous">
                                 <span aria-hidden="true">&laquo;</span>
                             </a>
                         <% }else{ %>
@@ -34,7 +34,7 @@
 
                         <li class="page-item <% if(link.active){ %> active <% } %>">
                             <% if(link.url){ %>
-                                <a class="page-link active" href="<%= link.url %>"><%= link.rel %></a>
+                                <a class="page-link active btn" href="<%= link.url %>"><%= link.rel %></a>
                             <% }else { %>
                                 <span class="page-link"><%= link.rel %></span>
                             <% } %>
@@ -42,7 +42,7 @@
                     <% }); %>
                     <li class="page-item">
                         <% if(pagination.next){ %>
-                            <a class="page-link" href="<%= pagination.next %>" aria-label="Next">
+                            <a class="page-link btn" href="<%= pagination.next %>" aria-label="Next">
                                 <span aria-hidden="true">&raquo;</span>
                             </a>
                         <% }else{ %>

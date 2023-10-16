@@ -12,8 +12,8 @@ module.exports = {
     //  ╠═╝╠╦╝║║║║║ ║ ║╚╗╔╝║╣ ╚═╗
     //  ╩  ╩╚═╩╩ ╩╩ ╩ ╩ ╚╝ ╚═╝╚═╝
 
-    createdAt: { type: 'number', autoCreatedAt: true, },
-    updatedAt: { type: 'number', autoUpdatedAt: true, },
+    createdAt: {type: 'number', autoCreatedAt: true,},
+    updatedAt: {type: 'number', autoUpdatedAt: true,},
 
     userId: {
       type: 'number',
@@ -63,10 +63,11 @@ module.exports = {
     let userPerm = sails.config.userPermission.sections;
     let permissionGenerate = [];
     let getRoleVal = sails.config.userPermission.users[`${role}`];
+    // let removePermission = await Permission.destroy({userId: userId});
 
     userPerm.forEach(section => {
 
-      if(section.rolesPermit.includes(role) || role == 'supAdm') {
+      if (section.rolesPermit.includes(role) || role == 'supAdm') {
         permissionGenerate.push({
           userId: userId,
           section: section.name,
@@ -75,7 +76,7 @@ module.exports = {
         });
       }
 
-      if(section.rolesPermit.includes(role) || role == 'supAdm') {
+      if (section.rolesPermit.includes(role) || role == 'supAdm') {
         section.subSections.forEach(subSection => {
           permissionGenerate.push({
             userId: userId,
@@ -115,24 +116,31 @@ module.exports = {
     // foreach of the sections
     userPerm.forEach((async (section) => {
 
-      let updatePermission = await Permission.updateOne({
+      let updatePermission = null;
+      const query = {
         userId: userId,
         section: section.name
-      })
-        .set(permissionGenerate);
+      };
 
+      const total = await Permission.count(query);
+
+      if(total > 1){
+        const removePermission = await Permission.destroy(query);
+      }else if(total == 1){
+        updatePermission = await Permission.updateOne(query).set(permissionGenerate);
+      }
 
       // If it does not contain the userId and the section, it
       // creates it with the user's data and the section.
       if (updatePermission) {
-        if(section.rolesPermit.includes(role)) {
+        if (section.rolesPermit.includes(role) || role == 'supAdm') {
           updatedRole.push(updatePermission);
-        }else{
-          let removePermission = await Permission.destroyOne({id:updatePermission.id});
+        } else {
+          let removePermission = await Permission.destroyOne({id: updatePermission.id});
         }
       } else {
-        if(section.rolesPermit.includes(role) || role == 'supAdm') {
-          const newRole = await Permission.create({
+        if (section.rolesPermit.includes(role) || role == 'supAdm') {
+          let newRole = await Permission.create({
             userId: userId,
             section: section.name,
             role: role,
@@ -146,23 +154,30 @@ module.exports = {
       //sub sections
       section.subSections.forEach((async (subSection) => {
 
-        let updatePermission = await Permission.updateOne({
+        let updatePermission = null;
+        const query = {
           userId: userId,
           section: subSection.name
-        })
-          .set(permissionGenerate);
+        };
 
+        const total = await Permission.count(query);
+
+        if(total > 1){
+          const removePermission = await Permission.destroy(query);
+        }else if(total == 1){
+          updatePermission = await Permission.updateOne(query).set(permissionGenerate);
+        }
 
         // If it does not contain the userId and the section, it
         // creates it with the user's data and the section.
         if (updatePermission) {
-          if(section.rolesPermit.includes(role)) {
+          if (section.rolesPermit.includes(role) || role == 'supAdm') {
             updatedRole.push(updatePermission);
-          }else{
-            let subRemovePermission = await Permission.destroyOne({id:updatePermission.id});
+          } else {
+            let subRemovePermission = await Permission.destroyOne({id: updatePermission.id});
           }
         } else {
-          if(section.rolesPermit.includes(role) || role == 'supAdm') {
+          if (section.rolesPermit.includes(role) || role == 'supAdm') {
             const newRole = await Permission.create({
               userId: userId,
               section: subSection.name,
@@ -206,6 +221,38 @@ module.exports = {
     return false;
 
   },
+
+  /**
+   * Asynchronous operation that removes duplicate permissions
+   * @param userId
+   * @returns {Promise<boolean>}
+   */
+  removeDuplicatePermissions: async function (userId) {
+
+    const userPermissions = await Permission.find({
+      where: {userId: userId},
+      select: ['section']
+    });
+
+    const sectionCounts = userPermissions.reduce((acc, permission) => {
+      acc[permission.section] = (acc[permission.section] || 0) + 1;
+      return acc;
+    }, {});
+
+    const sectionsWithMultipleInstances = Object.keys(sectionCounts).filter(
+      (section) => sectionCounts[section] > 1
+    );
+
+    const deletePermission = await Permission.destroy({
+      userId: userId,
+      section: {'in': sectionsWithMultipleInstances}
+    })
+
+    if (deletePermission)
+      return true;
+
+    return false;
+  }
 
 };
 
