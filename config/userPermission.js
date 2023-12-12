@@ -2,6 +2,7 @@ let spAd = 2000;
 let adm = 500;
 let editor = 400;
 let guest = 100;
+const groupPermission = ["adm", "editor", "guest"];
 
 module.exports.userPermission = {
   users: {
@@ -43,7 +44,7 @@ module.exports.userPermission = {
   sections: [
     {
       name: 'users',
-      url:'',
+      url:'/users/list',
       rolesPermit: ["adm"],
       subSections: [
         {
@@ -55,9 +56,18 @@ module.exports.userPermission = {
     {
       name: 'clients',
       url: '/clients/list',
-      rolesPermit: ["adm", "editor", "guest"],
+      rolesPermit: groupPermission,
       subSections: [],
     },
 
   ],
+  api: {
+      clients: {
+        name: 'api.clients',
+        url: '/api/r1/clients',
+        rolesPermit: groupPermission,
+        subSections: {},
+      },
+  },
+
 };

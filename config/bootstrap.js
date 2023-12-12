@@ -9,11 +9,33 @@
  * https://sailsjs.com/config/bootstrap
  */
 
+
 module.exports.bootstrap = async function() {
 
-  // Environment Variables
-  require('dotenv').config()
-  // console.log(process.env)
+  /**
+   * ---------------------------------
+   * Environment Variables
+   * Monitor changes to the .env file
+   * ---------------------------------
+   */
+  const dotenv = require('dotenv');
+  const fs = require('fs');
+  const loadEnv = () => {
+    const envConfig = dotenv.config();
+    Object.assign(process.env, envConfig.parsed);
+  };
+
+  loadEnv();
+
+  fs.watch('.env', (eventType, filename) => {
+    if (eventType === 'change') {
+      console.log('.env file changed. Reloading environment variables...');
+      loadEnv();
+    }
+  });
+
+  // ----------------------- End monitor .env  -----------------------
+
 
   // Import dependencies
   var path = require('path');
