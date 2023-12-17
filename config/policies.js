@@ -27,10 +27,10 @@ module.exports.policies = {
   'users/edit-user-controller':'access/user/can-edit-user-police',
   'users/edit-user-permission-controller':'access/user/can-edit-user-police',
   'users/delete-user-controller':'access/user/can-delete-user-police',
-  'v1/*': ['checkIPPolicy','is-logged-in-by-api'],
+  // api policies
+  'v1/*': ['checkIPPolicy','is-logged-in-by-api','throttle'],
   'v1/auth/ApiAuthController': {
-    login:'checkIPPolicy',
-    refreshToken:'checkIPPolicy',
+    login:['checkIPPolicy','throttleLogin'],
   }
 
 };

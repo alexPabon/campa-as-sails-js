@@ -20,7 +20,7 @@ module.exports.jwtConfig = {
 
     fs.appendFile(filePath, logMessage, (err) => {
       if (err) {
-        console.error('Error al escribir en el archivo de registro:', err);
+        console.error('Error writing to log file: ', err);
       }
     });
   }

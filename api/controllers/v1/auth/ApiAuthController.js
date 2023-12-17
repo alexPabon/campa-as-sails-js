@@ -65,13 +65,7 @@ module.exports = {
     const {secret, expiresIn, jwtRegistrationEvents} = sails.config.jwtConfig;
     const jwtSecrect = secret();
     const jwtExpiresIn = expiresIn();
-
     const authHeader = req.headers.authorization;
-    const {username} = req.allParams();
-
-    if (!username) {
-      return res.status(422).json({error: 'username not provided'});
-    }
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return res.status(401).json({error: 'Token not provided or in incorrect format'});
@@ -79,30 +73,38 @@ module.exports = {
 
     let token = authHeader.split(' ')[1];
 
-    const user = await User.findOne({
-      emailAddress: username.toLowerCase(),
-    }).populate('permissions', {select: ['section', 'role', 'permission']});
-
     // verify token
     try {
-
-      if (!user) {
-        throw {
-          name: "JsonWebTokenError",
-          message: "invalid signature"
-        };
-      }
 
       const decoded = jwt.verify(token, jwtSecrect, {ignoreExpiration: false});
       const date = Math.floor(Date.now() / 1000);
       let exp = Math.floor((decoded.exp - date) / 60);
 
-      if (user.emailAddress != decoded.emailAddress) {
-        exp = jwtExpiresIn;
-        token = jwt.sign({userId: 0}, 'invalid', {expiresIn: jwtExpiresIn});
-        jwtRegistrationEvents(`Token refresh, credential violation by user ${user.emailAddress} with user ${decoded.emailAddress} token from ip address ${req.ip}`);
-      } else if (exp < 5) {
-        throw {name: 'TokenExpiredError'}
+      if (exp < 20) {
+
+        const user = await User.findOne({
+          id: decoded.userId,
+        }).populate('permissions', {select: ['section', 'role', 'permission']});
+
+        if (!user) {
+          throw 'badCombo';
+        }
+
+        const payload = {
+          userId: user.id,
+          fullName: user.fullName,
+          emailAddress: user.emailAddress,
+          isSuperAdmin: user.isSuperAdmin,
+          permission: user.permissions,
+        }
+
+        token = jwt.sign(payload, jwtSecrect, {expiresIn: jwtExpiresIn});
+
+        return res.json({
+          token: token,
+          expiresIn: jwtExpiresIn
+        });
+
       }
 
       return res.json({
@@ -111,36 +113,7 @@ module.exports = {
       });
 
     } catch (error) {
-
-      if (error.name === 'TokenExpiredError') {
-
-        // generate new token
-        try {
-
-          if (!user) {
-            throw 'badCombo';
-          }
-
-          const payload = {
-            userId: user.id,
-            fullName: user.fullName,
-            emailAddress: user.emailAddress,
-            isSuperAdmin: user.isSuperAdmin,
-            permission: user.permissions,
-          }
-          token = jwt.sign(payload, jwtSecrect, {expiresIn: jwtExpiresIn});
-
-          return res.json({
-            token: token,
-            expiresIn: jwtExpiresIn
-          });
-        } catch (error) {
-          return res.status(401).json({error: 'Invalid credentials'});
-        }
-
-      }
-
-      return res.status(401).json({error});
+      return res.status(401).json({error: 'Invalid credentials'});
     }
   },
 
