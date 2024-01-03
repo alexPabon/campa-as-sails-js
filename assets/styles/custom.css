@@ -1,52 +1,52 @@
-.bg_red{
+.bg_red {
   background: red;
 }
 
-.bg_light_dark{
+.bg_light_dark {
   background: #e9ecef;
 }
 
-.btn_light_dark{
+.btn_light_dark {
   background: #e9ecef;
 }
 
-.btn_light_dark:hover{
+.btn_light_dark:hover {
   background: #c9cbcb;
 }
 
-.w_60px{
+.w_60px {
   width: 60px;
 }
 
-.w_70px{
+.w_70px {
   width: 70px;
 }
 
-.w_90px{
+.w_90px {
   width: 90px;
 }
 
-.w_100px{
+.w_100px {
   width: 100px;
 }
 
-.w_130px{
+.w_130px {
   width: 130px;
 }
 
-.w_150px{
+.w_150px {
   width: 150px;
 }
 
-.w_2{
-  width: 2% !important;
+.w_2 {
+  width: 2%;
 }
 
-.w_4{
-  width: 4% !important;
+.w_4 {
+  width: 4%;
 }
 
-.pointer{
+.pointer {
   cursor: pointer;
 }
 
@@ -56,7 +56,11 @@
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 

@@ -29,20 +29,20 @@
                                     </h6>
                                     <div>
                                         <%
-                                            let usCan = usPerm.canDo[`${module.role}`];
+                                            let uscan = usPerm.canDo[`${module.role}`];
 
-                                            if(Object.keys(usCan).length > 0){
-                                              for (let can in usCan){
+                                            if(Object.keys(uscan).length > 0){
+                                              for (let can in uscan){
 
 
                                         %>
                                             <div>
                                                 <input type="radio" id="<%= module.section+'_'+can %>"
                                                        class="canDoList"
-                                                       perId="<%= module.id %>"
+                                                       per-id="<%= module.id %>"
                                                        name="<%= module.section %>"
-                                                       value="<%= usCan[`${can}`] %>"
-                                                       <%if(usCan[`${can}`] == module.permission){%> checked <%}%>>
+                                                       value="<%= uscan[can] %>"
+                                                       <% /* eslint-disable-next-line */ if(uscan[`${can}`] == module.permission){%> checked <%}%>>
                                                 <label for="<%= module.section+'_'+can %>"><%= __(`canDo.${can}`) %></label>
                                             </div>
                                         <%     }
@@ -69,7 +69,7 @@
       checkPermissions[i].addEventListener('change',function (){
 
         let contCheck = this.closest('div');
-        let id = this.getAttribute('perId');
+        let id = this.getAttribute('per-id');
         let name = this.getAttribute('name');
         let val = this.value;
 

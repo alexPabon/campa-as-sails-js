@@ -3,9 +3,9 @@ const paramsTable = {
   perPage: 25,
   search: '',
   sort: null
-}
+};
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener('DOMContentLoaded', () => {
 
   // componente para ordenar registros en la tabla.
   const orderFields = document.querySelectorAll('strong.orderField');
@@ -34,13 +34,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
         currentIndex = ((index + 1) >= spans.length) ? 0 : (index + 1);
 
-        if (currentIndex != 0)
+        if (currentIndex !== 0) {
           spans[0].classList.add('d-none');
+        }
 
         spans[currentIndex].classList.remove('d-none');
         let field = spans[currentIndex].getAttribute('field');
         let sort = spans[currentIndex].getAttribute('sort');
-        paramsTable['sort'] = (field != null) ? `${field} ${sort}`:'';
+        paramsTable['sort'] = (field !== null) ? `${field} ${sort}`:'';
         getResultsTable();
       });
     });
@@ -55,6 +56,7 @@ function getResultsTable() {
   }
 }
 
+/* eslint-disable no-unused-vars */
 function limpiarInput(input) {
 
   input = input.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
@@ -76,5 +78,6 @@ function validarEmail(email) {
 
   return regex.test(email);
 }
+/* eslint-enable no-unused-vars */
 
 

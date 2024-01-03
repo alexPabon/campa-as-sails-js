@@ -5,7 +5,7 @@ module.exports = {
       create: true,
       edit: true,
       delete: true
-    }
+    };
 
 
     let findSection = req.permissions.find(role => role.section === section);
@@ -44,7 +44,7 @@ module.exports = {
     let module = {};
 
     if(sections && sections.length > 0){
-      sections.forEach(function (sect){
+      sections.forEach((sect) => {
         let title = sect.section.split('.',1);
         title = title[0];
         if(module[`${title}`]){

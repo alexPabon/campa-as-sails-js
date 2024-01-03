@@ -130,11 +130,11 @@ module.exports = {
     var util = require('util');
 
     if(from === undefined){
-      from = process.env.MAIL_FROM_ADDRESS
+      from = process.env.MAIL_FROM_ADDRESS;
     }
 
     if(fromName === undefined){
-      fromName = process.env.MAIL_FROM_NAME
+      fromName = process.env.MAIL_FROM_NAME;
     }
 
 
@@ -253,7 +253,7 @@ module.exports = {
         to: to,
         subject: subjectLinePrefix+subject,
         html: htmlEmailContents,
-      }, function(error, info) {
+      }, (error, info) => {
         if (error) {
           sails.log.error(
             'Background instruction failed:  Could not deliver email:\n'+

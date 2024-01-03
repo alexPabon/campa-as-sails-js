@@ -1,3 +1,4 @@
+
 /**
  * Permission.js
  *
@@ -14,12 +15,6 @@ module.exports = {
 
     createdAt: {type: 'number', autoCreatedAt: true,},
     updatedAt: {type: 'number', autoUpdatedAt: true,},
-
-    userId: {
-      type: 'number',
-      required: false,
-      unique: false,
-    },
 
     section: {
       type: 'string',
@@ -60,6 +55,7 @@ module.exports = {
    */
   customCreateRole: async function (role, userId) {
 
+    const Permission = sails.models.permission;
     let userPerm = sails.config.userPermission.sections;
     let permissionGenerate = [];
     let getRoleVal = sails.config.userPermission.users[`${role}`];
@@ -67,7 +63,7 @@ module.exports = {
 
     userPerm.forEach(section => {
 
-      if (section.rolesPermit.includes(role) || role == 'supAdm') {
+      if (section.rolesPermit.includes(role) || role === 'supAdm') {
         permissionGenerate.push({
           userId: userId,
           section: section.name,
@@ -76,7 +72,7 @@ module.exports = {
         });
       }
 
-      if (section.rolesPermit.includes(role) || role == 'supAdm') {
+      if (section.rolesPermit.includes(role) || role === 'supAdm') {
         section.subSections.forEach(subSection => {
           permissionGenerate.push({
             userId: userId,
@@ -84,15 +80,16 @@ module.exports = {
             role: role,
             permission: getRoleVal
           });
-        })
+        });
       }
     });
 
 
     const newRole = await Permission.createEach(permissionGenerate).fetch();
 
-    if (!Permission.customUpdateUserRole(role, userId))
-      console.error('No se actualizo en role de isSuperAdmin en el usuario.')
+    if (!Permission.customUpdateUserRole(role, userId)) {
+      console.error('No se actualizo en role de isSuperAdmin en el usuario.');
+    }
 
     return newRole;
   },
@@ -105,6 +102,7 @@ module.exports = {
    */
   customUpdateRole: async function (role, userId) {
 
+    const Permission = sails.models.permission;
     let userPerm = sails.config.userPermission.sections;
     let getRoleVal = sails.config.userPermission.users[`${role}`];
     let updatedRole = [];
@@ -124,22 +122,22 @@ module.exports = {
 
       const total = await Permission.count(query);
 
-      if(total > 1){
-        const removePermission = await Permission.destroy(query);
-      }else if(total == 1){
+      if (total > 1) {
+        await Permission.destroy(query);
+      } else if (total === 1) {
         updatePermission = await Permission.updateOne(query).set(permissionGenerate);
       }
 
       // If it does not contain the userId and the section, it
       // creates it with the user's data and the section.
       if (updatePermission) {
-        if (section.rolesPermit.includes(role) || role == 'supAdm') {
+        if (section.rolesPermit.includes(role) || role === 'supAdm') {
           updatedRole.push(updatePermission);
         } else {
-          let removePermission = await Permission.destroyOne({id: updatePermission.id});
+          await Permission.destroyOne({id: updatePermission.id});
         }
       } else {
-        if (section.rolesPermit.includes(role) || role == 'supAdm') {
+        if (section.rolesPermit.includes(role) || role === 'supAdm') {
           let newRole = await Permission.create({
             userId: userId,
             section: section.name,
@@ -162,22 +160,22 @@ module.exports = {
 
         const total = await Permission.count(query);
 
-        if(total > 1){
-          const removePermission = await Permission.destroy(query);
-        }else if(total == 1){
+        if (total > 1) {
+          await Permission.destroy(query);
+        } else if (total === 1) {
           updatePermission = await Permission.updateOne(query).set(permissionGenerate);
         }
 
         // If it does not contain the userId and the section, it
         // creates it with the user's data and the section.
         if (updatePermission) {
-          if (section.rolesPermit.includes(role) || role == 'supAdm') {
+          if (section.rolesPermit.includes(role) || role === 'supAdm') {
             updatedRole.push(updatePermission);
           } else {
-            let subRemovePermission = await Permission.destroyOne({id: updatePermission.id});
+            await Permission.destroyOne({id: updatePermission.id});
           }
         } else {
-          if (section.rolesPermit.includes(role) || role == 'supAdm') {
+          if (section.rolesPermit.includes(role) || role === 'supAdm') {
             const newRole = await Permission.create({
               userId: userId,
               section: subSection.name,
@@ -193,8 +191,9 @@ module.exports = {
 
     }));
 
-    if (!Permission.customUpdateUserRole(role, userId))
-      console.error('No se actualizo en role de isSuperAdmin en el usuario.')
+    if (!Permission.customUpdateUserRole(role, userId)) {
+      console.error('No se actualizo en role de isSuperAdmin en el usuario.');
+    }
 
     return updatedRole;
   },
@@ -210,13 +209,15 @@ module.exports = {
   customUpdateUserRole: async function (role, userId) {
     let isSuperAdmin = false;
 
-    if (role == 'supAdm')
+    if (role === 'supAdm') {
       isSuperAdmin = true;
+    }
 
     let updateUser = await User.updateOne({id: userId}).set({isSuperAdmin: isSuperAdmin});
 
-    if (updateUser)
+    if (updateUser) {
       return true;
+    }
 
     return false;
 
@@ -229,6 +230,7 @@ module.exports = {
    */
   removeDuplicatePermissions: async function (userId) {
 
+    const Permission = sails.models.permission;
     const userPermissions = await Permission.find({
       where: {userId: userId},
       select: ['section']
@@ -246,10 +248,11 @@ module.exports = {
     const deletePermission = await Permission.destroy({
       userId: userId,
       section: {'in': sectionsWithMultipleInstances}
-    })
+    });
 
-    if (deletePermission)
+    if (deletePermission) {
       return true;
+    }
 
     return false;
   }

@@ -30,7 +30,7 @@ module.exports = {
     }
 
     const languages = sails.config.i18n.locales;
-    let lang = this.req.query.lang
+    let lang = this.req.query.lang;
 
     if(lang !== 'undifined' && languages.includes(lang)){
       this.req.setLocale(lang);

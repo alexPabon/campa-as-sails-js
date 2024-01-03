@@ -73,6 +73,9 @@ var jsFilesToInject = [
   'dependencies/vue-router.js',
   'dependencies/**/*.js',
 
+  'dependencies/sweetalert/dist/sweetalert.min.js',
+  'dependencies/axios/dist/axios.min.js',
+
   // First amongst the app-level files, bring in cloud configuration
   'js/cloud.setup.js',
 

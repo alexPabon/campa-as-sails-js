@@ -1,12 +1,11 @@
-const {generatePaginationLinks, getFilters} = require("../../utils/paginationUtil");
-const {getUserCanDo} = require("../../utils/userCanDoUtils");
-const url = require("url");
+const {generatePaginationLinks, getFilters} = require('../../utils/paginationUtil');
+const MagkamClient = sails.models.magkamclient;
 
 module.exports = {
 
-friendlyName: 'View user list page',
+  friendlyName: 'View user list page',
 
-description: 'Display the "users-list" page.',
+  description: 'Display the "users-list" page.',
 
   exits: {
 
@@ -16,9 +15,6 @@ description: 'Display the "users-list" page.',
 
   },
 
-  cli_hola: function (req, res) {
-    return res.send("clientes hola!");
-  },
   /**
    * List of clients
    * @param req
@@ -33,26 +29,27 @@ description: 'Display the "users-list" page.',
     let totalFilter = '';
     const sortPermit = ['name ASC', 'name DESC'];
 
-    if(!sortPermit.includes(filter.orderBy))
+    if (!sortPermit.includes(filter.orderBy)) {
       filter.orderBy = 'name ASC';
+    }
 
-    if(filter.search == ''){
+    if (filter.search === '') {
 
       clientList = await MagkamClient.find().sort(filter.orderBy).limit(filter.perPage).skip(filter.goToPage);
 
-    }else{
+    } else {
 
       filter.search = filter.search.trim();
 
       clientList = await MagkamClient.find({
-        where:{
-          name:{contains: filter.search}
+        where: {
+          name: {contains: filter.search}
         }
       }).sort(filter.orderBy).limit(filter.perPage).skip(filter.goToPage);
 
       totalFilter = await MagkamClient.count({
-        where:{
-          name:{contains: filter.search}
+        where: {
+          name: {contains: filter.search}
         }
       });
     }
@@ -62,13 +59,13 @@ description: 'Display the "users-list" page.',
     let total = await MagkamClient.count();
 
     let params = {
-      total:total,
-      totalResults:totalFilter,
-      baseUrl:basePath,
-      perPage:filter.perPage,
-      currentPage:filter.page,
-      search:filter.search,
-      orderBy:filter.orderBy
+      total: total,
+      totalResults: totalFilter,
+      baseUrl: basePath,
+      perPage: filter.perPage,
+      currentPage: filter.page,
+      search: filter.search,
+      orderBy: filter.orderBy
     };
 
     let pagination = generatePaginationLinks(params);

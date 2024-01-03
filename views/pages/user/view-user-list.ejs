@@ -73,7 +73,7 @@
                         <%if(can.delete){%>
                             <td class="text-center">
                               <span class="btn-sm btn-outline-danger pointer userDelete"
-                                    usId="<%= user.id%>"
+                                    us-id="<%= user.id%>"
                                     field="<%= user.fullName %> - <%= user.emailAddress %>"
                               >
                                   <i class="fa fa-trash-o"></i>
@@ -107,7 +107,7 @@
 
         userDelete[i].addEventListener('click',function (){
 
-          let id = this.getAttribute('usId');
+          let id = this.getAttribute('us-id');
           let field = this.getAttribute('field');
 
           let data = {

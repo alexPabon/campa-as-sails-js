@@ -243,6 +243,7 @@ will be disabled and/or hidden in the UI.
               res.locals.me = sanitizedUser;
 
               // roles and Permissions
+              var Permission = sails.models.permission;
               res.locals.me.sectionRole = await Permission.find({where:{userId:req.me.id},select:['userId','section','role','permission']});
 
               // Include information on the locals as to whether billing features

@@ -2,17 +2,38 @@
     <div>
         <div class="form-group p-1 rounded bg_light_dark">
             <select id="selPerPage" class="form-control perPage">
-                <option value="15" class="py-3" <% if(pagination.perPage == 15) {%> selected <%}%>>15</option>
-                <option value="25" class="py-3" <% if(pagination.perPage == 25) {%> selected <%}%>>25</option>
-                <option value="50" class="py-3" <% if(pagination.perPage == 50) {%> selected <%}%>>50</option>
-                <option value="100" class="py-3" <% if(pagination.perPage == 100) {%> selected <%}%>>100</option>
+                <% /* eslint-disable-next-line */ %>
+                <% if(pagination.perPage == 15) { %>
+                    <option value="15" class="py-3" selected>15</option>
+                <% } else { %>
+                    <option value="15" class="py-3">15</option>
+                <% } %>
+                <% /* eslint-disable-next-line */ %>
+                <% if(pagination.perPage == 25) { %>
+                    <option value="25" class="py-3" selected>25</option>
+                <% } else { %>
+                    <option value="25" class="py-3">25</option>
+                <% } %>
+                <% /* eslint-disable-next-line */ %>
+                <% if(pagination.perPage == 50) { %>
+                    <option value="50" class="py-3" selected>50</option>
+                <% } else { %>
+                    <option value="50" class="py-3">50</option>
+                <% } %>
+                <% /* eslint-disable-next-line */ %>
+                <% if(pagination.perPage == 100) { %>
+                    <option value="100" class="py-3" selected>100</option>
+                <% } else { %>
+                    <option value="100" class="py-3">100</option>
+                <% } %>
+
             </select>
         </div>
     </div>
     <div>
         <div class="input-group pl-2 py-1 bg_light_dark  rounded">
             <div class="form-outline">
-                <input id="searchField" type="search" id="form1" class="form-control" value="<%= pagination.search %>" />
+                <input id="searchField" type="search" class="form-control" value="<%= pagination.search %>" />
             </div>
             <span type="button" class="p-2">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">

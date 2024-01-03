@@ -2,7 +2,7 @@ const ipRangeCheck = require('ip-range-check');
 const moment = require('moment-timezone');
 
 const ip = require('ip');
-const fs = require("fs");
+const fs = require('fs');
 
 module.exports = async function (req, res, proceed) {
 

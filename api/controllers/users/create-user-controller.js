@@ -1,3 +1,4 @@
+const Permission = sails.models.permission;
 module.exports = {
 
   inputs: {
@@ -58,19 +59,19 @@ module.exports = {
       }).fetch();
 
       if(newUserRecord){
-        let permissions = Permission.customCreateRole(role, newUserRecord.id);
+        Permission.customCreateRole(role, newUserRecord.id);
       }
 
       return {
         ok:true,
         user: newUserRecord,
         role: sails.__(`roles.${role}`)
-      }
+      };
 
     }else {
       return {
         ok:false,
-      }
+      };
     }
 
   }

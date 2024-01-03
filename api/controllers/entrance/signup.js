@@ -69,6 +69,7 @@ the account verification message.)`,
   fn: async function ({emailAddress, password, fullName}) {
 
     var newEmailAddress = emailAddress.toLowerCase();
+    const Permission = sails.models.permission;
 
     // Build up data for the new user record and save it to the database.
     // (Also use `fetch` to retrieve the new ID so that we can use it below.)
@@ -87,7 +88,7 @@ the account verification message.)`,
     .fetch();
 
     // generate roles and permissions.
-    let permissions = Permission.customCreateRole('guest', newUserRecord.id);
+    Permission.customCreateRole('guest', newUserRecord.id);
 
     // If billing feaures are enabled, save a new customer entry in the Stripe API.
     // Then persist the Stripe customer id in the database.

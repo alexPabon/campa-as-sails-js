@@ -2,7 +2,7 @@ let spAd = 2000;
 let adm = 500;
 let editor = 400;
 let guest = 100;
-const groupPermission = ["adm", "editor", "guest"];
+const groupPermission = ['adm', 'editor', 'guest'];
 
 module.exports.userPermission = {
   users: {
@@ -12,8 +12,8 @@ module.exports.userPermission = {
     guest: guest
   },
   canDo: {
-    supAdm:{
-      all:spAd,
+    supAdm: {
+      all: spAd,
       delEdit: 1993,
       edit: 1992,
       justSee: 1991,
@@ -44,8 +44,8 @@ module.exports.userPermission = {
   sections: [
     {
       name: 'users',
-      url:'/users/list',
-      rolesPermit: ["adm"],
+      url: '/users/list',
+      rolesPermit: ['adm'],
       subSections: [
         {
           name: 'users.list',
@@ -62,12 +62,12 @@ module.exports.userPermission = {
 
   ],
   api: {
-      clients: {
-        name: 'api.clients',
-        url: '/api/r1/clients',
-        rolesPermit: groupPermission,
-        subSections: {},
-      },
+    clients: {
+      name: 'api.clients',
+      url: '/api/r1/clients',
+      rolesPermit: groupPermission,
+      subSections: {},
+    },
   },
 
 };

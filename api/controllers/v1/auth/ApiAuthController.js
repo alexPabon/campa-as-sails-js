@@ -41,7 +41,7 @@ module.exports = {
         emailAddress: user.emailAddress,
         isSuperAdmin: user.isSuperAdmin,
         permission: user.permissions,
-      }
+      };
       const token = jwt.sign(payload, jwtSecrect, {expiresIn: jwtExpiresIn});
 
       return res.json({
@@ -50,6 +50,7 @@ module.exports = {
       });
 
     } catch (error) {
+      console.error(error);
       return res.status(401).json({error: 'Invalid credentials'});
     }
   },
@@ -62,7 +63,7 @@ module.exports = {
    */
   refreshToken: async function (req, res) {
 
-    const {secret, expiresIn, jwtRegistrationEvents} = sails.config.jwtConfig;
+    const {secret, expiresIn} = sails.config.jwtConfig;
     const jwtSecrect = secret();
     const jwtExpiresIn = expiresIn();
     const authHeader = req.headers.authorization;
@@ -96,7 +97,7 @@ module.exports = {
           emailAddress: user.emailAddress,
           isSuperAdmin: user.isSuperAdmin,
           permission: user.permissions,
-        }
+        };
 
         token = jwt.sign(payload, jwtSecrect, {expiresIn: jwtExpiresIn});
 
@@ -113,6 +114,7 @@ module.exports = {
       });
 
     } catch (error) {
+      console.error(error);
       return res.status(401).json({error: 'Invalid credentials'});
     }
   },

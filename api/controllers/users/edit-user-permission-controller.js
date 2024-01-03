@@ -1,3 +1,4 @@
+const Permission = sails.models.permission;
 module.exports = {
 
   inputs: {
@@ -38,8 +39,9 @@ module.exports = {
     })
       .set({permission: permissionValue});
 
-    if(!updatePermission)
+    if (!updatePermission) {
       return this.res.notFound;
+    }
 
     return true;
 

@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener('DOMContentLoaded', () => {
   let generatePass = document.getElementById('generatedPassword');
   if(generatePass) {
     generatePass.addEventListener('click', function () {

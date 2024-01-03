@@ -1,3 +1,4 @@
+const Permission = sails.models.permission;
 module.exports = {
 
   inputs: {
@@ -51,7 +52,7 @@ module.exports = {
     let newEmailAddress = emailAddress.toLowerCase();
     let updateUser;
 
-    if(password !='') {
+    if(password !=='') {
       updateUser = await User.updateOne({id: userId}).set({
         fullName: fullName.trim(),
         emailAddress: newEmailAddress,
@@ -64,11 +65,12 @@ module.exports = {
       });
     }
 
-    if (!updateUser)
+    if (!updateUser) {
       return this.res.notFound();
+    }
 
     if(role) {
-      let permissions = Permission.customUpdateRole(role, userId);
+      Permission.customUpdateRole(role, userId);
     }
 
     return true;

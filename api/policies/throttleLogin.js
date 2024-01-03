@@ -5,7 +5,6 @@
  *
  */
 
-const jwt = require("jsonwebtoken");
 const requestCountsLogin = {};
 
 module.exports = function (req, res, proceed) {

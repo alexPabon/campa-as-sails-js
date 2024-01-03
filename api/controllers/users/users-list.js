@@ -1,6 +1,6 @@
-const {generatePaginationLinks, getFilters} = require("../../utils/paginationUtil");
-const {getUserCanDo} = require("../../utils/userCanDoUtils");
-const url = require("url");
+const {generatePaginationLinks, getFilters} = require('../../utils/paginationUtil');
+const {getUserCanDo} = require('../../utils/userCanDoUtils');
+const User = sails.models.user;
 module.exports = {
 
   friendlyName: 'View user list page',
@@ -30,15 +30,16 @@ module.exports = {
       'fullName ASC', 'fullName DESC',
       'emailAddress ASC', 'emailAddress DESC',
       'permission ASC', 'permission DESC',
-    ]
+    ];
 
-    if (!sortPermit.includes(filter.orderBy))
+    if (!sortPermit.includes(filter.orderBy)) {
       filter.orderBy = 'createdAt DESC';
+    }
 
     if (filter.orderBy === 'permission DESC' || filter.orderBy === 'permission ASC') {
 
       // filter
-      if (filter.search == '') {
+      if (filter.search === '') {
         userList = await User.find({
           where: {
             isSuperAdmin: 0,
@@ -73,7 +74,6 @@ module.exports = {
 
 
       // sort by permissions
-      let cont = 0;
       userList.sort((userA, userB) => {
         const permissionsA = userA.permissions.length > 0 ? userA.permissions[0] : null;
         const permissionsB = userB.permissions.length > 0 ? userB.permissions[0] : null;
@@ -103,7 +103,7 @@ module.exports = {
 
       // *************************  orderby != permission ***********************
       // ***********************************************************************
-      if (filter.search == '') {
+      if (filter.search === '') {
         userList = await User.find({
           where: {
             isSuperAdmin: 0,

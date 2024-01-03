@@ -1,6 +1,5 @@
-const {generatePaginationLinks} = require("../../utils/paginationUtil");
-const {getUserCanDo, getUserSections} = require("../../utils/userCanDoUtils");
-const url = require("url");
+const {getUserSections} = require('../../utils/userCanDoUtils');
+
 module.exports = {
 
 
@@ -32,16 +31,16 @@ module.exports = {
     this.res.locals.me.subSectName = section.subSections[0].name;
     let userId = this.req.params.userId;
 
-    let user = await User.findOne({ id: userId}).populate('permissions');
+    let user = await User.findOne({id: userId}).populate('permissions');
 
     if (!user) {
-      throw {redirect:'/users/list'};
+      throw {redirect: '/users/list'};
     }
 
     user['sections'] = getUserSections(this.req.me, user.permissions);
 
     return {
-      userfields:user,
+      userfields: user,
     };
 
   }

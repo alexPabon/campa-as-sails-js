@@ -2,15 +2,26 @@
 
     <ul class="navbar-nav mr-auto">
         <li class="">
-            <a class="nav-item nav-link ml-1 ml-md-0 mr-1 mr-md-0 border-0" href="/language-change?lang=es">
-                <span class="<% if(me.lang == 'es') { %> lang_selected <% }else { %> no_select <% } %>pb-1">ES</span>
-            </a>
+            <% if(me.lang == 'es') { %>
+                <span class="nav-item nav-link ml-1 ml-md-0 mr-1 mr-md-0 border-0">
+                        <span class="lang_selected pb-1">ES</span>
+                    </span>
+            <% }else { %>
+                <a class="nav-item nav-link ml-1 ml-md-0 mr-1 mr-md-0 border-0" href="/language-change?lang=es">
+                    <span class="no_select pb-1">ES</span>
+                </a>
+            <% } %>
         </li>
-
         <li class="">
-            <a class="nav-item nav-link ml-1 ml-md-0 mr-1 mr-md-0 border-0" href="/language-change?lang=en">
-                <span class="<% if(me.lang == 'en') { %> lang_selected <% }else { %> no_select <% } %>pb-1">EN</span>
-            </a>
+            <% if(me.lang == 'en') { %>
+                <span class="nav-item nav-link ml-1 ml-md-0 mr-1 mr-md-0 border-0">
+                    <span class="lang_selected pb-1">EN</span>
+                </span>
+            <% }else { %>
+                <a class="nav-item nav-link ml-1 ml-md-0 mr-1 mr-md-0 border-0" href="/language-change?lang=en">
+                    <span class="no_select pb-1">EN</span>
+                </a>
+            <% } %>
         </li>
     </ul>
 <% } else { %>

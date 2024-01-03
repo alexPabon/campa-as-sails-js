@@ -8,7 +8,7 @@ module.exports.jwtConfig = {
   },
   expiresIn: function () {
     const jwtExpiresIn = process.env.JWT_EXPIRES_IN_MIN || 60;
-    return `${jwtExpiresIn}m`
+    return `${jwtExpiresIn}m`;
   },
 
   jwtRegistrationEvents: function (errorMsg) {
@@ -25,5 +25,5 @@ module.exports.jwtConfig = {
     });
   }
 
-}
+};
 

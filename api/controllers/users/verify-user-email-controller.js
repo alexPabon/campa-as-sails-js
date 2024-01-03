@@ -30,24 +30,24 @@ module.exports = {
   },
 
 
-  fn: async function ({emailAddress,userId}) {
+  fn: async function ({emailAddress, userId}) {
 
     let exists;
     let lowEmailAddress = emailAddress.toLowerCase();
 
-    if(userId){
+    if (userId) {
       exists = await User.findOne({
-          where: {
-            emailAddress:lowEmailAddress,
-            id: { '!=': userId }
-          }
+        where: {
+          emailAddress: lowEmailAddress,
+          id: {'!=': userId}
+        }
       });
-    }else{
-      exists = await User.findOne({emailAddress:lowEmailAddress});
+    } else {
+      exists = await User.findOne({emailAddress: lowEmailAddress});
     }
 
     return {
-      isValid:!exists,
+      isValid: !exists,
     };
 
   }

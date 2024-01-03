@@ -1,8 +1,10 @@
+const Permission = sails.models.permission;
+
 module.exports = {
 
   inputs: {
 
-    userId:  {
+    userId: {
       required: true,
       type: 'number',
     },
@@ -20,12 +22,13 @@ module.exports = {
 
   fn: async function ({userId}) {
 
-    let removePermissions = await Permission.destroy({userId:userId});
+    await Permission.destroy({userId: userId});
 
     let removeUser = await User.destroyOne({id: userId});
 
-    if(!removeUser)
+    if (!removeUser) {
       return this.res.notFound;
+    }
 
     return true;
 

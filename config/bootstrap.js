@@ -27,7 +27,7 @@ module.exports.bootstrap = async function() {
 
   loadEnv();
 
-  fs.watch('.env', (eventType, filename) => {
+  fs.watch('.env', (eventType) => {
     if (eventType === 'change') {
       console.log('.env file changed. Reloading environment variables...');
       loadEnv();
