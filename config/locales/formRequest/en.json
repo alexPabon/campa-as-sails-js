@@ -1,0 +1,19 @@
+{
+  "array": "Field {field} must be an array",
+  "arrayMax": "The field array {field} must have maximum {params} elements",
+  "arrayMin": "The field array {field} must have at least {params} elements",
+  "isEmail": "The field {field} must be a valid email",
+  "lengthMax": "The field {field} must have a maximum of {params} characters",
+  "lengthMin": "The field {field} must have at least {params} characters",
+  "max": "The field {field} smaller than {params}",
+  "min": "The largest field {field} of {params}",
+  "no_valid": "Field {field} has an invalid rule {ruleName} {params}",
+  "number": "The field {field} must be a number",
+  "required": "The field {field} is required",
+  "string": "Field {field} must be a string",
+  "fileRequired": "The field {field} is a required file type",
+  "isFile": "The field {field} must be a valid file",
+  "mime": "The field {field} must be a file of type {params}",
+  "sizeMax": "The field {field} must be a file of maximum {params} KB",
+  "isFileType": "The field {field} must be a valid file of type {params}"
+}

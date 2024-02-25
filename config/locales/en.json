@@ -8,11 +8,11 @@
 	"Change password": "Change password",
 	"Check your email!": "Check your email!",
 	"Choose a password": "Choose a password",
-	"Confirm": "Confirm",
+	"Confirm": "Confirm deletion",
 	"Confirm password": "Confirm password",
 	"Create account": "Create account",
 	"Dear": "Dear",
-	"Each change is applied directly to the user": "Each change is applied directly to the user.",
+	"Each change is applied directly to the user": "Each change is saved automatically.",
 	"Edit": "Edit",
 	"Edit permissions by sections": "Edit permissions by sections",
 	"Edit profile": "Edit profile",
@@ -30,12 +30,19 @@
 	"Menu": {
 		"clients": {
 			"list": "list",
-			"name": "Clients"
+			"name": "Clients",
+			"newline": "newline",
+			"otra": "otra"
 		},
 		"users": {
 			"list": "User List",
 			"name": "Users"
-		}
+		},
+		"api": {
+			"name": "API",
+			"clients": "Clients"
+		},
+		"app": "App"
 	},
 	"My_account": "My account",
 	"Name": "Name",
@@ -110,5 +117,14 @@
 		"name": "Name",
 		"role": "Role",
 		"title_list_users": "List of Users and Roles"
+	},
+	"api": {
+		"name": "API",
+		"clients": {
+			"name": "Clients",
+			"list": "List of Clients",
+			"newline": "New Client",
+			"otra": "Otra"
+		}
 	}
 }

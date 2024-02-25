@@ -8,11 +8,11 @@
 	"Change password": "Cambiar la contraseña",
 	"Check your email!": "¡Consultar su correo electrónico!",
 	"Choose a password": "elegir una contraseña",
-	"Confirm": "Confirmar",
+	"Confirm": "Confirmar eliminación",
 	"Confirm password": "Confirmar Contraseña",
 	"Create account": "Crear cuenta",
 	"Dear": "Estimado",
-	"Each change is applied directly to the user": "Cada cambio se aplica directamente al usuario.",
+	"Each change is applied directly to the user": "Cada cambio se guarda automaticamente.",
 	"Edit": "Editar",
 	"Edit permissions by sections": "Editar permisos por secciones",
 	"Edit profile": "Editar perfil",
@@ -35,7 +35,12 @@
 		"users": {
 			"list": "Listado",
 			"name": "Usuarios"
-		}
+		},
+		"api": {
+			"name": "API",
+			"clients": "Clientes"
+		},
+		"app": "App"
 	},
 	"My account": "My account",
 	"My_account": "mi cuenta",
@@ -111,5 +116,14 @@
 		"name": "Nombre",
 		"role": "Role",
 		"title_list_users": "Listado de Usuarios y Roles"
+	},
+	"api": {
+		"name": "API",
+		"clients": {
+			"name": "Clients",
+			"list": "List of Clients",
+			"newline": "New Client",
+			"otra": "Otra"
+		}
 	}
 }

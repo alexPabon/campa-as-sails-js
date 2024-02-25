@@ -1,0 +1,19 @@
+{
+  "array": "El campo {field} debe ser un array",
+  "arrayMax": "El array del campo {field} debe tener máximo {params} elementos",
+  "arrayMin": "El array del campo {field} debe tener al menos {params} elementos",
+  "isEmail": "El campo {field} debe ser un correo electrónico válido",
+  "lengthMax": "El campo {field} debe tener máximo {params} caracteres",
+  "lengthMin": "El campo {field} debe tener al menos {params} caracteres",
+  "max": "El campo {field} menor de {params}",
+  "min": "El campo {field} mayor de {params}",
+  "no_valid": "El campo {field} tiene una regla no válida {ruleName} {params}",
+  "number": "El campo {field} debe ser un número",
+  "required": "El campo {field} es obligatorio",
+  "string": "El campo {field} debe ser una cadena de texto",
+  "fileRequired": "El campo {field} es un tipo de archivo obligatorio",
+  "isFile": "El campo {field} debe ser un archivo válido",
+  "mime": "El campo {field} debe ser un archivo de tipo {params}",
+  "sizeMax": "El campo {field} debe ser un archivo de máximo {params} KB",
+  "isFileType": "El campo {field} debe ser un archivo válido de tipo {params}"
+}
