@@ -56,10 +56,16 @@ module.exports = {
   customCreateRole: async function (role, userId) {
 
     const Permission = sails.models.permission;
-    let userPerm = sails.config.userPermission.sections;
+    const sections = [...sails.config.userPermission.sections];
+    const api = Object.assign({}, sails.config.userPermission.api);
+    let userPerm = await Permission.convertAndMerge(api, sections);
     let permissionGenerate = [];
     let getRoleVal = sails.config.userPermission.users[`${role}`];
-    // let removePermission = await Permission.destroy({userId: userId});
+    let removePermission = await Permission.destroy({userId: userId}).fetch();
+
+    if (!removePermission) {
+      console.error('The permissions were not removed.');
+    }
 
     userPerm.forEach(section => {
 
@@ -85,119 +91,22 @@ module.exports = {
     });
 
 
-    const newRole = await Permission.createEach(permissionGenerate).fetch();
-
-    if (!Permission.customUpdateUserRole(role, userId)) {
-      console.error('No se actualizo en role de isSuperAdmin en el usuario.');
-    }
-
-    return newRole;
-  },
-
-  /**
-   * Asynchronous operation to update user permissions.
-   * @param role
-   * @param userId
-   * @returns {Promise<*[]>}
-   */
-  customUpdateRole: async function (role, userId) {
-
-    const Permission = sails.models.permission;
-    let userPerm = sails.config.userPermission.sections;
-    let getRoleVal = sails.config.userPermission.users[`${role}`];
-    let updatedRole = [];
-    const permissionGenerate = {
-      role: role,
-      permission: getRoleVal
-    };
-
-    // foreach of the sections
-    userPerm.forEach((async (section) => {
-
-      let updatePermission = null;
-      const query = {
-        userId: userId,
-        section: section.name
-      };
-
-      const total = await Permission.count(query);
-
-      if (total > 1) {
-        await Permission.destroy(query);
-      } else if (total === 1) {
-        updatePermission = await Permission.updateOne(query).set(permissionGenerate);
-      }
-
-      // If it does not contain the userId and the section, it
-      // creates it with the user's data and the section.
-      if (updatePermission) {
-        if (section.rolesPermit.includes(role) || role === 'supAdm') {
-          updatedRole.push(updatePermission);
-        } else {
-          await Permission.destroyOne({id: updatePermission.id});
-        }
+    try {
+      await Permission.createEach(permissionGenerate).fetch();
+    } catch (error) {
+      if (error.code === 'E_UNIQUE') {
+        console.error('An attempt was made to insert a duplicate record:', error.code);
       } else {
-        if (section.rolesPermit.includes(role) || role === 'supAdm') {
-          let newRole = await Permission.create({
-            userId: userId,
-            section: section.name,
-            role: role,
-            permission: getRoleVal
-          }).fetch();
-
-          updatedRole.push(newRole);
-        }
+        throw error;
       }
-
-      //sub sections
-      section.subSections.forEach((async (subSection) => {
-
-        let updatePermission = null;
-        const query = {
-          userId: userId,
-          section: subSection.name
-        };
-
-        const total = await Permission.count(query);
-
-        if (total > 1) {
-          await Permission.destroy(query);
-        } else if (total === 1) {
-          updatePermission = await Permission.updateOne(query).set(permissionGenerate);
-        }
-
-        // If it does not contain the userId and the section, it
-        // creates it with the user's data and the section.
-        if (updatePermission) {
-          if (section.rolesPermit.includes(role) || role === 'supAdm') {
-            updatedRole.push(updatePermission);
-          } else {
-            await Permission.destroyOne({id: updatePermission.id});
-          }
-        } else {
-          if (section.rolesPermit.includes(role) || role === 'supAdm') {
-            const newRole = await Permission.create({
-              userId: userId,
-              section: subSection.name,
-              role: role,
-              permission: getRoleVal
-            }).fetch();
-
-            updatedRole.push(newRole);
-          }
-        }
-
-      }));
-
-    }));
-
-    if (!Permission.customUpdateUserRole(role, userId)) {
-      console.error('No se actualizo en role de isSuperAdmin en el usuario.');
     }
 
-    return updatedRole;
-  },
+    if (!Permission.customUpdateUserRole(role, userId)) {
+      console.error('The isSuperAdmin role in the user table is not updated.');
+    }
 
+    return await Permission.find({userId: userId});
+  },
 
   /**
    * Asynchronous operation that updates the 'user.isSuperAdmin' field
@@ -215,12 +124,105 @@ module.exports = {
 
     let updateUser = await User.updateOne({id: userId}).set({isSuperAdmin: isSuperAdmin});
 
-    if (updateUser) {
-      return true;
+    return !!updateUser;
+
+  },
+
+  /**
+   * Asynchronous operation that creates the permissions for all users.
+   * @returns {Promise<string>}
+   */
+  customVerifyRoles: async function () {
+    const Permission = sails.models.permission;
+    const sections = [...sails.config.userPermission.sections];
+    const api = Object.assign({}, sails.config.userPermission.api);
+    let userPerm = await Permission.convertAndMerge(api, sections);
+    let permissionGenerate = [];
+    let permittedSections = [];
+    const users =  await User.find().select(['id']).populate('permissions');
+
+    userPerm.forEach(section => {
+
+      if(!permittedSections.includes(section.name)){
+        permittedSections.push(section.name);
+      }
+
+      section.subSections.forEach(subSection => {
+        if(!permittedSections.includes(subSection.name)){
+          permittedSections.push(subSection.name);
+        }
+      });
+
+    });
+
+
+    users.forEach(user => {
+      if(user.permissions.length === 0){
+        Permission.customCreateRole('guest', user.id);
+      }else{
+        userPerm.forEach(section => {
+          const userRole = user.permissions[0].role;
+
+          /** Verify if the user has a permission to the section */
+          if(section.rolesPermit.includes(userRole) || userRole === 'supAdm'){
+            let findPermission = user.permissions.find(permission => permission.section === section.name);
+            let findGeneralPermission = permissionGenerate.find(permission => permission.section === section.name && permission.userId === user.id);
+            if (!findPermission && !findGeneralPermission) {
+
+              let template = {
+                userId: user.id,
+                section: section.name,
+                role: userRole,
+                permission: sails.config.userPermission.users[`${userRole}`]
+              };
+              permissionGenerate.push(template);
+            }
+
+            /** Verify if the user has a permission to the subSection */
+            section.subSections.forEach(subSection => {
+              let findPermission = user.permissions.find(permission => permission.section === subSection.name);
+              let findGeneralPermission = permissionGenerate.find(permission => permission.section === subSection.name && permission.userId === user.id);
+              if (!findPermission && !findGeneralPermission) {
+
+                let template = {
+                  userId: user.id,
+                  section: subSection.name,
+                  role: userRole,
+                  permission: sails.config.userPermission.users[`${userRole}`]
+                };
+                permissionGenerate.push(template);
+              }
+            });
+          }
+        });
+
+      }
+    });
+
+    if(permissionGenerate.length > 0){
+      try {
+        await Permission.createEach(permissionGenerate).fetch();
+      } catch (error) {
+        if (error.code === 'E_UNIQUE') {
+          console.error('An attempt was made to insert a duplicate record:', error.code);
+        } else {
+          throw error;
+        }
+      }
     }
 
-    return false;
+    Permission.destroy({
+      section: {'nin': permittedSections}
+    }).exec((err) =>{
+      if (err) {
+        // manejar error
+        console.log(err);
+      } else {
+        console.log('unused sections, removed correctly');
+      }
+    });
 
+    return 'insert permissions: ' + permissionGenerate.length;
   },
 
   /**
@@ -255,6 +257,33 @@ module.exports = {
     }
 
     return false;
+  },
+
+  convertAndMerge: (api, sections) => {
+    // Iterar sobre las propiedades del objeto api
+    for (let key in api) {
+      // Crear un nuevo objeto con la estructura de sections
+      let newSection = {
+        name: api[key].name,
+        url: api[key].url,
+        rolesPermit: api[key].rolesPermit,
+        subSections: []
+      };
+
+      // Convertir las subsecciones
+      for (let subKey in api[key].subSections) {
+        newSection.subSections.push({
+          name: api[key].subSections[subKey].name,
+          url: api[key].subSections[subKey].url
+        });
+      }
+
+      // Agregar el nuevo objeto al array sections
+      sections.push(newSection);
+    }
+
+    // Retornar el array sections actualizado
+    return sections;
   }
 
 };

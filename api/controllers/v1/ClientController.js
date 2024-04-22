@@ -30,7 +30,7 @@ module.exports = {
     const sortPermit = ['name ASC', 'name DESC'];
 
     if (!sortPermit.includes(filter.orderBy)) {
-      filter.orderBy = 'name ASC';
+      filter.orderBy = 'id DESC';
     }
 
     if (filter.search === '') {
@@ -76,6 +76,39 @@ module.exports = {
       sortPermit: sortPermit,
       baseUrl: req.baseUrl,
     });
+  },
+
+  show: async function (req, res) {
+    let id = parseInt(req.param('id')) || 0;
+    let client = await MagkamClient.findOne({id: id});
+
+    if (!client) {
+      return res.status(404).json({error: 'Client not found'});
+    }
+
+
+    return res.json(client);
+  },
+
+  create: async function (req, res) {
+    let client = await MagkamClient.create(req.body).fetch();
+    return res.json(client);
+  },
+
+  update: async function (req, res) {
+    let client = await MagkamClient.update({id: req.param('id')}, req.body).fetch();
+    return res.json(client);
+  },
+
+  destroy: async function (req, res) {
+
+    let client = await MagkamClient.destroy({id: req.param('id')}).fetch();
+
+    if (!client) {
+      return res.status(404).json({error: 'Client not found'});
+    }
+
+    return res.json(client);
   }
 
 };

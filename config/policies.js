@@ -8,6 +8,8 @@
  * https://sailsjs.com/docs/concepts/policies
  */
 
+const groupPolicyApi = ['checkIPPolicy','is-logged-in-by-api','throttle'];
+
 module.exports.policies = {
 
   '*': 'is-logged-in',
@@ -28,9 +30,12 @@ module.exports.policies = {
   'users/edit-user-permission-controller':'access/user/can-edit-user-police',
   'users/delete-user-controller':'access/user/can-delete-user-police',
   // api policies
-  'v1/*': ['checkIPPolicy','is-logged-in-by-api','throttle'],
+  'v1/*': groupPolicyApi,
   'v1/auth/ApiAuthController': {
     login:['checkIPPolicy','throttleLogin'],
+  },
+  'v1/ClientController': {
+    create:[...groupPolicyApi,'request/clientRequest'],
   }
 
 };

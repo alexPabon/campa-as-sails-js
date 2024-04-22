@@ -21,6 +21,7 @@
 
 module.exports = {
 
+  bootstrapTimeout: 10000,
 
   /**************************************************************************
   *                                                                         *
@@ -131,9 +132,12 @@ module.exports = {
     ***************************************************************************/
     cors: {
       allowOrigins: [
-        'https://example.com',
-      ]
+        'http://localhost:1337',
+      ],
+      credentials: true,
     },
+
+    csrf: true,
 
   },
 
@@ -194,7 +198,7 @@ module.exports = {
     * https://sailsjs.com/config/session#?the-session-id-cookie                *
     *                                                                          *
     ***************************************************************************/
-    // name: '__Host-sails.sid',
+    name: '__Host-sails.sid',
 
     /***************************************************************************
     *                                                                          *
@@ -218,7 +222,7 @@ module.exports = {
     *                                                                          *
     ***************************************************************************/
     cookie: {
-      // secure: true,
+      secure: true,
       maxAge: 24 * 60 * 60 * 1000,  // 24 hours
     },
 
@@ -247,10 +251,9 @@ module.exports = {
     * > Be sure to use the right protocol!  ("http://" vs. "https://")         *
     *                                                                          *
     ***************************************************************************/
-    // onlyAllowOrigins: [
-    //   'https://example.com',
-    //   'https://staging.example.com',
-    // ],
+    onlyAllowOrigins: [
+      'http://localhost:1337',
+    ],
 
 
     /***************************************************************************
@@ -337,7 +340,7 @@ module.exports = {
   * this, just try deploying without setting it and see if it works.)       *
   *                                                                         *
   ***************************************************************************/
-  // port: 80,
+  port: 1337,
 
 
 
@@ -371,7 +374,7 @@ module.exports = {
   *                                                                         *
   ***************************************************************************/
   custom: {
-    baseUrl: 'https://example.com',
+    baseUrl: 'http://localhost',
     internalEmailAddress: 'support@example.com',
 
     // sendgridSecret: 'SG.fake.3e0Bn0qSQVnwb1E4qNPz9JZP5vLZYqjh7sn8S93oSHU',

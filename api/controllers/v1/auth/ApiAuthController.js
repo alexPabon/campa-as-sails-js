@@ -5,6 +5,7 @@
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
 const jwt = require('jsonwebtoken');
+const {generateToken} = require('../../../utils/generateTokenUtil');
 
 module.exports = {
 
@@ -15,9 +16,6 @@ module.exports = {
   login: async function (req, res) {
 
     const {username, password} = req.allParams();
-    const {secret, expiresIn} = sails.config.jwtConfig;
-    const jwtSecrect = secret();
-    const jwtExpiresIn = expiresIn();
 
     if (!username || !password) {
       return res.status(422).json({error: 'Username or password not provided'});
@@ -35,19 +33,7 @@ module.exports = {
 
       await sails.helpers.passwords.checkPassword(password, user.password).intercept('incorrect', 'badCombo');
 
-      const payload = {
-        userId: user.id,
-        fullName: user.fullName,
-        emailAddress: user.emailAddress,
-        isSuperAdmin: user.isSuperAdmin,
-        permission: user.permissions,
-      };
-      const token = jwt.sign(payload, jwtSecrect, {expiresIn: jwtExpiresIn});
-
-      return res.json({
-        token: token,
-        expiresIn: jwtExpiresIn,
-      });
+      return generateToken(user, res);
 
     } catch (error) {
       console.error(error);
@@ -63,9 +49,8 @@ module.exports = {
    */
   refreshToken: async function (req, res) {
 
-    const {secret, expiresIn} = sails.config.jwtConfig;
+    const {secret} = sails.config.jwtConfig;
     const jwtSecrect = secret();
-    const jwtExpiresIn = expiresIn();
     const authHeader = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -91,20 +76,7 @@ module.exports = {
           throw 'badCombo';
         }
 
-        const payload = {
-          userId: user.id,
-          fullName: user.fullName,
-          emailAddress: user.emailAddress,
-          isSuperAdmin: user.isSuperAdmin,
-          permission: user.permissions,
-        };
-
-        token = jwt.sign(payload, jwtSecrect, {expiresIn: jwtExpiresIn});
-
-        return res.json({
-          token: token,
-          expiresIn: jwtExpiresIn
-        });
+        return generateToken(user, res);
 
       }
 

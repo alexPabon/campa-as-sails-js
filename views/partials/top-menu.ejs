@@ -17,18 +17,33 @@
                             </span>
                         </a>
 
-                    <% }else{ %>
+                    <% }else{
+                        for (let subSection of section.subSections){
+                            let findSubSection = me.sectionRole.find(role => role.section === subSection.name);
 
-                        <span
-                              class="nav-item nav-link ml-1 ml-md-0 mr-1 mr-md-0 border-0 sections">
-                            <span class="<% if(me.sectName === section.name) { %> section_selected <% }else { %> no_section_selected <% } %>pb-2 text-capitalize">
-                                <%= __(`Menu.${section.name}.name`) %>
-                            </span>
-                        </span>
+                            if(findSubSection && ((findSubSection.permission !== sails.config.userPermission.canDo[`${findSubSection.role}`].none && section.rolesPermit.includes(`${findSection.role}`)) || me.isSuperAdmin)){
+                    %>
+
+                                <a href="<%= subSection.url %>" id="<%= /* eslint-disable-next-line */ section.name %>"
+                                   class="nav-item nav-link ml-1 ml-md-0 mr-1 mr-md-0 border-0 sections">
+                                    <span class="<% if(me.sectName === section.name) { %> section_selected <% }else { %> no_section_selected <% } %>pb-2 text-capitalize">
+                                        <%= __(`Menu.${section.name}.name`) %>
+                                    </span>
+                                </a>
+                        <% break; }
+                        } %>
+
 
                     <% } %>
                 </li>
             <% }} %>
+            <li>
+                <a href="<%= process.env.API_FRONTED_URL || '' %>" id="app" class="nav-item nav-link ml-1 ml-md-0 mr-1 mr-md-0 border-0 sections">
+                    <span class="no_section_selected pb-2 text-capitalize">
+                        <%= __(`Menu.app`) %>
+                    </span>
+                </a>
+            </li>
         </ul>
     </div>
 <% } %>

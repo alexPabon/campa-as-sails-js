@@ -44,7 +44,7 @@ module.exports.userPermission = {
   sections: [
     {
       name: 'users',
-      url: '/users/list',
+      url: '',
       rolesPermit: ['adm'],
       subSections: [
         {
@@ -53,13 +53,6 @@ module.exports.userPermission = {
         },
       ],
     },
-    {
-      name: 'clients',
-      url: '/clients/list',
-      rolesPermit: groupPermission,
-      subSections: [],
-    },
-
   ],
   api: {
     clients: {

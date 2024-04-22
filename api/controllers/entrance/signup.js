@@ -88,7 +88,13 @@ the account verification message.)`,
     .fetch();
 
     // generate roles and permissions.
-    Permission.customCreateRole('guest', newUserRecord.id);
+    const supAdmin = process.env.ROLE_SUPER_ADMIN.toLowerCase();
+
+    if(supAdmin === newUserRecord.emailAddress.toLowerCase()) {
+      Permission.customCreateRole('supAdm', newUserRecord.id);
+    }else {
+      Permission.customCreateRole('guest', newUserRecord.id);
+    }
 
     // If billing feaures are enabled, save a new customer entry in the Stripe API.
     // Then persist the Stripe customer id in the database.

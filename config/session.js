@@ -8,6 +8,8 @@
  * For all available options, see:
  * https://sailsjs.com/config/session
  */
+var session = require('express-session');
+var MySQLSessionStore = require('express-mysql-session')(session);
 
 module.exports.session = {
 
@@ -35,5 +37,25 @@ module.exports.session = {
   // isSessionDisabled: function (req){
   //   return !!req.path.match(req._sails.LOOKS_LIKE_ASSET_RX);
   // },
+
+
+  option: new MySQLSessionStore({
+    host: process.env.DB_HOST,
+    port: process.env.DB_PORT,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_DATABASE,
+    checkExpirationInterval: 900000,
+    expiration: 86400000,
+    createDatabaseTable: true,
+    schema: {
+      tableName: 'sessions',
+      columnNames: {
+        session_id: 'session_id',
+        expires: 'expires',
+        data: 'data'
+      }
+    }
+  })
 
 };

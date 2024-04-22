@@ -1,0 +1,137 @@
+<div class="d-flex flex-wrap">
+    <div class="col-12 col-md-10 col-lg-7 col-xl-5 mx-auto py-3">
+        <h6 class="card-header bg-dark text-center text-light border border-dark">
+            <%= __('Edit user') %>
+        </h6>
+        <div class="card-body border border-secondary rounded-bottom">
+            <form id="editUser">
+                <%- partial ('../../partials/users/user-fields-partial',{user:userfields}); %>
+                <div class="form-group mt-5">
+                    <button type="reset" class="col-4 mr-1 btn btn-outline-secondary"><%= __('Cancel') %></button>
+                    <button type="submit" class="col-4 ml-1 btn btn-dark">
+                        <%= __('Save') %>
+                        <span class="d-none">
+                            <i class="fa fa-spinner"></i>
+                        </span>
+                    </button>
+                </div>
+                <div class="error_request alert alert-danger d-none"></div>
+            </form>
+        </div>
+    </div>
+    <div class="col-12 col-md-12 col-xl-7 py-3">
+        <h6 class="card-header bg-dark text-center text-light">
+            <%= __('Edit permissions by sections') %>
+        </h6>
+        <h6 class="bg-info m-0 text-light p-1">
+            <%= __('Each change is applied directly to the user') %>
+        </h6>
+        <%- partial ('../../partials/users/user-section-permission-partial',{userSections:userfields.sections}); %>
+    </div>
+</div>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    let formEditUser = document.getElementById('editUser');
+    let editUser = formEditUser.querySelector('button[type="submit"]');
+    let cancelEditUser = formEditUser.querySelector('button[type="reset"]');
+    let sendInput = formEditUser.getElementsByTagName('input');
+    let selectRole = formEditUser.querySelector('select[name="role"]');
+    let initialRole = '';
+    initialRole = <% if(userfields && userfields.permissions.length > 0){ %>'<%= userfields.permissions[0].role %>';<% } %>
+
+    editUser.addEventListener('click', function (e){
+      e.preventDefault();
+      let sendFlag = true;
+      let data = {};
+
+      for(let i=0; i<sendInput.length; i++){
+        let isEmail = sendInput[i].getAttribute('type');
+        let fieldName = sendInput[i].getAttribute('name');
+        sendInput[i].nextElementSibling.classList.add('invalid-feedback');
+
+        if(isEmail == 'email' && sendInput[i].value != ''){
+
+          let emailValid = validarEmail(sendInput[i].value);
+
+          if(!emailValid){
+            sendInput[i].nextElementSibling.classList.remove('invalid-feedback');
+            sendFlag = false;
+          }
+
+        }else if((isEmail == 'email' && sendInput[i].value == '') || sendInput[i].value == ''){
+          if(fieldName != 'password') {
+            sendInput[i].nextElementSibling.classList.remove('invalid-feedback');
+            sendFlag = false;
+          }
+        }
+
+        if(sendInput[i].getAttribute('name')) {
+          data[`${sendInput[i].getAttribute('name')}`] = sendInput[i].value;
+        }
+      }
+
+      selectRole.nextElementSibling.classList.add('invalid-feedback');
+
+      if(selectRole.getAttribute('name') && selectRole.value != initialRole) {
+        data[`${selectRole.getAttribute('name')}`] = selectRole.value;
+      }
+
+      if(selectRole.value == ''){
+        selectRole.nextElementSibling.classList.remove('invalid-feedback');
+        sendFlag = false;
+      }
+
+      if(sendFlag){
+        editUser.querySelector('span').classList.remove('d-none');
+
+        axios({
+          method: 'post',
+          url: '/users/edit',
+          data: data,
+          headers: {
+            'content-type': 'application/json',
+            'X-CSRF-TOKEN': '<%= _csrf %>',
+          }
+        })
+          .then(function (response) {
+
+            editUser.querySelector('span').classList.add('d-none');
+            cancelEditUser.click();
+
+          })
+          .catch(function (error) {
+            console.error(error);
+            let resError = formEditUser.querySelector('div.error_request');
+
+            resError.classList.remove('d-none');
+            resError.innerHTML = error.response.status +' - '+ error.response.data;
+
+            editUser.querySelector('span').classList.add('d-none');
+
+          });
+
+      }else {
+        editUser.querySelector('span').classList.add('d-none');
+      }
+    });
+
+
+    selectRole.addEventListener('change',function (){
+      let allPermitBySections = document.getElementById('contAllPermissions');
+
+      if(allPermitBySections) {
+        if (this.value != initialRole) {
+          allPermitBySections.classList.add('d-none');
+        } else {
+          allPermitBySections.classList.remove('d-none');
+        }
+      }
+    });
+
+    cancelEditUser.addEventListener('click', function (){
+        location.replace(localStorage.userList??'/')
+    });
+
+  });
+</script>
+<%- /* Expose locals as `window.SAILS_LOCALS` :: */ exposeLocalsToBrowser() %>

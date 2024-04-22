@@ -70,7 +70,7 @@ module.exports = {
     }
 
     if(role) {
-      Permission.customUpdateRole(role, userId);
+      Permission.customCreateRole(role, userId);
     }
 
     return true;
